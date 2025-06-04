@@ -48,7 +48,7 @@ const Categories = () => {
         },
         {
             id: 9,
-            name: "Texnika extiyot qismlari",
+            name: "Texnika extiyot qismlarin",
             image: "/spare-parts.png"
         }
     ]
