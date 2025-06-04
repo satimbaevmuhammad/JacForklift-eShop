@@ -17,6 +17,7 @@ jobs:
         script: |
           cd /var/www/JacForklift-eShop
           git pull origin master
+          npm run build
           sudo supervisorctl restart jac-e-shop
 
           
