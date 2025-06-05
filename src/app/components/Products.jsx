@@ -54,7 +54,7 @@ const Products = () => {
 
       // Fetch all products for categories
       const allProductsResponse = await fetch(
-        "https://jac.ishbozor.uz/api/api/forklifts/?page_size=1000"
+        "https://api.jacforklift.uz/api/api/forklifts/?page_size=1000"
       );
 
       if (allProductsResponse.ok) {
