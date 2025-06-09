@@ -9,47 +9,56 @@ const Categories = () => {
         {
             id: 1,
             name: "Dizelli transportlar",
-            image: "/traktr.png"
+            image: "/traktr.png",
+            key: "diesel"
         },
         {
             id: 2,
             name: "Elektri transportlar",
-            image: "/pts.png"
+            image: "/pts.png",
+            key: "Electric"
         },
         {
             id: 3,
             name: "Benzinli transportlar",
-            image: "/orn.png"
+            image: "/orn.png",
+            key: "Petrol"
         },
         {
             id: 4,
             name: "LPG transportlari",
-            image: "/traktr.png"
+            image: "/traktr.png",
+            key: "lpg"
         },
         {
             id: 5,
             name: "Elektr pallet yuk mashinasi",
-            image: "/pall.png"
+            image: "/pall.png",
+            key: "electric pallet"
         },
         {
             id: 6,
             name: "Elektr stacker mashinaslari",
-            image: "/stacker.png"
+            image: "/stacker.png",
+            key: "PALLET STACKER"
         },
         {
             id: 7,
             name: "Reach truck forklift",
-            image: "/reach-truck.png"
+            image: "/reach-truck.png",
+            key: "REACH TRUCK"
         },
         {
             id: 8,
             name: "Handle pallet forklift",
-            image: "/handle-pallet.png"
+            image: "/handle-pallet.png",
+            key: "Handle Pallets"
         },
         {
             id: 9,
             name: "Texnika extiyot qismlarin",
-            image: "/spare-parts.png"
+            image: "/spare-parts.png",
+            key: "spare"
         }
     ]
 
@@ -68,7 +77,7 @@ const Categories = () => {
                     {categories.map((category) => (
                         <Link
                             key={category.id}
-                            href={`/categoryDetail/${category.id}`}
+                            href={`/cattegoryDatail/${category.id}`}
                             className="bg-white rounded-xl md:rounded-xl lg:rounded-2xl shadow-sm hover:shadow-lg md:hover:shadow-2xl md:hover:shadow-orange-500/20 transition-all duration-300 md:duration-500 cursor-pointer border border-gray-100 hover:border-orange-200 md:transform md:hover:-translate-y-1 lg:hover:-translate-y-2 md:hover:scale-102 lg:hover:scale-105 group
                             /* Mobile: horizontal layout */
                             flex flex-row items-center p-5 min-h-[120px]
