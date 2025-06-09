@@ -119,7 +119,7 @@ const CategoryDetailPage = () => {
                         onClick={handleBackClick}
                         className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition-colors"
                     >
-                        Orqaga qaytish
+                        Orqaga qaytish.
                     </button>
                 </div>
             </div>
