@@ -287,7 +287,7 @@ const Products = () => {
                             </span>
                           ) : (
                             <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-1 rounded border border-green-200">
-                              bor
+                              Mavjud
                             </span>
                           )}
                           <span className="text-xs text-gray-500">

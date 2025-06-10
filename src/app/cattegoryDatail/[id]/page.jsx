@@ -96,6 +96,10 @@ const CategoryDetailPage = () => {
         router.push('/')
     }
 
+    const handleProductClick = (productId) => {
+        router.push(`/karaDetail/${productId}`)
+    }
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -127,10 +131,10 @@ const CategoryDetailPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 md:bg-[url('/bgimg.png')] md:bg-cover py-4 md:py-6 lg:py-12 px-4 md:px-3 lg:px-6">
+        <div className="min-h-screen bg-gray-100 py-6 px-4">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="mb-6 md:mb-8 lg:mb-12">
+                <div className="mb-8">
                     <div className="flex items-center mb-4">
                         <button
                             onClick={handleBackClick}
@@ -140,31 +144,32 @@ const CategoryDetailPage = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
-                        <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-black">
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
                             {categoryInfo?.name}
                         </h1>
                     </div>
-                    <p className="text-gray-600 text-lg md:text-xl ml-14">
+                    <p className="text-gray-600 ml-14">
                         Jami {products.length} ta mahsulot
                     </p>
                 </div>
 
                 {/* Products Grid */}
                 {products.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {products.map((product, index) => (
                             <div
                                 key={product.id || index}
-                                className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-100 hover:border-orange-200 transform hover:-translate-y-1 hover:scale-105 group"
+                                className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                                onClick={() => handleProductClick(product.id)}
                             >
                                 {/* Product Image */}
-                                <div className="p-4 pb-2">
-                                    <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden">
+                                <div className="p-4">
+                                    <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden mb-4">
                                         {(product.images && product.images.length > 0) ? (
                                             <img
                                                 src={product.images[0].image}
                                                 alt={product.name || product.title || 'Mahsulot'}
-                                                className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300"
+                                                className="max-w-full max-h-full object-contain"
                                                 onError={(e) => {
                                                     e.target.style.display = 'none'
                                                     e.target.nextElementSibling.style.display = 'flex'
@@ -174,7 +179,7 @@ const CategoryDetailPage = () => {
                                         
                                         {/* Fallback icon */}
                                         <div
-                                            className="text-gray-400 group-hover:text-orange-500 transition-colors duration-300"
+                                            className="text-gray-300"
                                             style={{ display: (product.images && product.images.length > 0) ? 'none' : 'flex' }}
                                         >
                                             <svg className="w-20 h-20" fill="currentColor" viewBox="0 0 200 150">
@@ -187,87 +192,79 @@ const CategoryDetailPage = () => {
                                             </svg>
                                         </div>
                                     </div>
-                                </div>
 
-                                {/* Product Info */}
-                                <div className="p-4 pt-2">
-                                    <h3 className="font-bold text-lg text-black group-hover:text-orange-600 transition-colors duration-300 mb-2 line-clamp-2">
+                                    {/* Product Title */}
+                                    <h3 className="font-semibold text-gray-800 text-base mb-3 line-clamp-2 min-h-[48px]">
                                         {product.name || product.title || 'Mahsulot nomi'}
                                     </h3>
                                     
-                                    {/* Model raqami */}
-                                    {product.model_number && (
-                                        <p className="text-gray-500 text-sm mb-2">
-                                            Model: {product.model_number}
-                                        </p>
-                                    )}
-                                    
-                                    {/* Yuk ko'tarish qobiliyati */}
-                                    {product.capacity_kg && (
-                                        <p className="text-blue-600 font-semibold text-sm mb-2">
-                                            Yuk ko'tarish: {product.capacity_kg} kg
-                                        </p>
-                                    )}
-                                    
-                                    {/* Narx */}
-                                    {product.price_usd && parseFloat(product.price_usd) > 0 && (
-                                        <p className="text-orange-600 font-bold text-xl mb-2">
-                                            ${parseFloat(product.price_usd).toLocaleString()}
-                                        </p>
-                                    )}
-                                    
-                                    {/* Tavsif */}
-                                    {product.description && (
-                                        <p className="text-gray-600 text-sm line-clamp-3 mb-3">
-                                            {product.description}
-                                        </p>
-                                    )}
+                                    {/* Price */}
+                                    <div className="mb-4">
+                                        {product.price_usd && parseFloat(product.price_usd) > 0 ? (
+                                            <p className="text-orange-500 font-bold text-xl">
+                                                ${parseFloat(product.price_usd).toLocaleString()}
+                                            </p>
+                                        ) : (
+                                            <p className="text-gray-500 text-lg">
+                                                Narx so'ralsin
+                                            </p>
+                                        )}
+                                    </div>
 
-                                    {/* Qo'shimcha ma'lumotlar */}
-                                    <div className="text-xs text-gray-500 space-y-1 mb-3">
+                                    {/* Product Details */}
+                                    <div className="space-y-2 mb-4">
+                                        {product.model_number && (
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-gray-500">Model:</span>
+                                                <span className="text-gray-700 font-medium">{product.model_number}</span>
+                                            </div>
+                                        )}
+
+                                        {product.capacity_kg && (
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-gray-500">Yuk ko'tarish:</span>
+                                                <span className="text-gray-700 font-medium">{product.capacity_kg} kg</span>
+                                            </div>
+                                        )}
+
                                         {product.engine_type && (
-                                            <div className="flex justify-between">
-                                                <span>Dvigatel:</span>
-                                                <span>{product.engine_type}</span>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-gray-500">Dvigatel:</span>
+                                                <span className="text-gray-700 font-medium">{product.engine_type}</span>
                                             </div>
                                         )}
+
                                         {product.manufacture_year && (
-                                            <div className="flex justify-between">
-                                                <span>Yil:</span>
-                                                <span>{product.manufacture_year}</span>
-                                            </div>
-                                        )}
-                                        {product.forklift_type && (
-                                            <div className="flex justify-between">
-                                                <span>Turi:</span>
-                                                <span className="capitalize">{product.forklift_type}</span>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-gray-500">Yil:</span>
+                                                <span className="text-gray-700 font-medium">{product.manufacture_year}</span>
                                             </div>
                                         )}
                                     </div>
 
-                                    {/* Omborda mavjudligi */}
-                                    <div className="mb-3">
-                                        <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                                            product.in_stock > 0 
-                                                ? 'bg-green-100 text-green-800' 
-                                                : 'bg-red-100 text-red-800'
-                                        }`}>
-                                            {product.in_stock > 0 ? 'Omborda bor' : 'Tugagan'}
+                                    {/* Stock Status */}
+                                    <div className="mb-4">
+                                        <span className='inline-block px-3 py-1 text-xs rounded-full font-medium bg-green-100 text-green-700'>
+                                            Mavjud
                                         </span>
                                     </div>
 
-                                    {/* Action button */}
-                                    <div className="mt-4 pt-3 border-t border-gray-100">
-                                        <button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-lg transition-colors duration-300 font-medium">
-                                            Batafsil ko'rish
-                                        </button>
-                                    </div>
+                                    {/* Action Button */}
+                                    <button
+                                        className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 px-4 rounded-lg transition-colors duration-200 font-medium text-sm"
+                                        onClick={(e) => {
+                                            e.stopPropagation() // Karta clickini to'xtatish
+                                            handleProductClick(product.id)
+                                        }}
+                                    >
+                                        Batafsil ma'lumot
+                                    </button>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-12">
+                        <div className="text-center py-16">
                         <div className="w-24 h-24 mx-auto mb-6 text-gray-300">
                             <svg fill="currentColor" viewBox="0 0 200 150" className="w-full h-full">
                                 <rect x="10" y="80" width="80" height="40" rx="5" fill="currentColor" />

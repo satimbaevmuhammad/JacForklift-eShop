@@ -40,7 +40,6 @@ const ProductDetailPage = () => {
 
             const response = await fetch(`https://api.jacforklift.uz/api/api/forklifts/${params.id}/`, {
                 method: "GET",
-                credentials: "include",
                 headers: {
                     "Accept": "application/json",
                     "Content-Type": "application/json"
@@ -81,7 +80,6 @@ const ProductDetailPage = () => {
         try {
             const response = await fetch('https://api.jacforklift.uz/api/api/forklifts/', {
                 method: "GET",
-                credentials: "include",
                 headers: {
                     "Accept": "application/json"
                 }
@@ -270,7 +268,6 @@ const ProductDetailPage = () => {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
-                credentials: 'include',
                 body: JSON.stringify(requestData)
             })
 
@@ -427,7 +424,7 @@ const ProductDetailPage = () => {
                                             value={phoneNumber}
                                             onChange={handlePhoneChange}
                                             placeholder="+998"
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all text-base"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all text-black outline-none"
                                             required
                                             maxLength={17}
                                         />
@@ -560,7 +557,7 @@ const ProductDetailPage = () => {
 
                                 <div className="flex items-center justify-between">
                                     <div className="text-lg font-medium text-gray-600">
-                                        bor
+                                        Mavjud
                                     </div>
 
                                     <button
@@ -653,36 +650,36 @@ const ProductDetailPage = () => {
                                 <h3 className="font-semibold text-gray-900 mb-4">Texnik xususiyatlari</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                                     {product.capacity_kg && (
-                                        <div className="flex justify-between">
+                                        <div className="flex gap-4">
                                             <span className="text-gray-600">Ko'tarish qobiliyati:</span>
-                                            <span className="font-medium">{product.capacity_kg / 1000} ton</span>
+                                            <span className="font-medium text-black">{product.capacity_kg / 1000} ton</span>
                                         </div>
                                     )}
                                     {product.model_number && (
-                                        <div className="flex justify-between">
+                                        <div className="flex gap-4">
                                             <span className="text-gray-600">Model:</span>
-                                            <span className="font-medium">{product.model_number}</span>
+                                            <span className="font-medium text-black">{product.model_number}</span>
                                         </div>
                                     )}
                                     {product.forklift_type && (
-                                        <div className="flex justify-between">
+                                        <div className="flex gap-4">
                                             <span className="text-gray-600">Yoqilg'i turi:</span>
-                                            <span className="font-medium capitalize">{product.forklift_type}</span>
+                                            <span className="font-medium capitalize text-black">{product.forklift_type}</span>
                                         </div>
                                     )}
                                     {product.engine_type && (
-                                        <div className="flex justify-between">
+                                        <div className="flex gap-4">
                                             <span className="text-gray-600">Dvigatel:</span>
-                                            <span className="font-medium">{product.engine_type}</span>
+                                            <span className="font-medium text-black">{product.engine_type}</span>
                                         </div>
                                     )}
                                     {product.manufacture_year && (
-                                        <div className="flex justify-between">
+                                        <div className="flex gap-4">
                                             <span className="text-gray-600">Ishlab chiqarilgan yili:</span>
-                                            <span className="font-medium">{product.manufacture_year}</span>
+                                            <span className="font-medium text-black">{product.manufacture_year}</span>
                                         </div>
                                     )}
-                                    <div className="flex justify-between">
+                                    <div className="flex gap-4">
                                         <span className="text-gray-600">Mavjudligi:</span>
                                         <span className="font-medium text-green-600">
                                             Mavjud
@@ -695,7 +692,7 @@ const ProductDetailPage = () => {
                                 <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-center sm:space-y-0">
                                     <div>
                                         <span className="text-2xl font-medium text-gray-600">
-                                            bor
+                                            Mavjud
                                         </span>
                                         <div className="flex items-center space-x-2 mt-2">
                                             <div className="w-3 h-3 rounded-full bg-green-500"></div>

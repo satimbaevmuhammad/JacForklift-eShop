@@ -212,9 +212,7 @@ const Navbar = () => {
                                     </div>
 
                                     <div className="text-right">
-                                        <div className="text-sm font-semibold text-orange-500 mb-1">
-                                            36 500 so'm
-                                        </div>
+                                   
                                         <div className="flex items-center justify-end">
                                             <svg className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
