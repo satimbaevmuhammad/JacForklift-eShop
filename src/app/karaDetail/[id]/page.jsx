@@ -549,8 +549,8 @@ const ProductDetailPage = () => {
 
                             <div className="pt-4 border-t border-gray-100">
                                 <div className="flex items-center space-x-2 mb-3">
-                                    <div className={`w-3 h-3 rounded-full ${isInStock(product.in_stock) ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                                    <span className={`text-sm font-medium ${isInStock(product.in_stock) ? 'text-green-600' : 'text-red-600'}`}>
+                                    <div className={`w-3 h-3 rounded-full ${isInStock(product.in_stock) ? 'bg-green-500' : 'bg-green-500'}`}></div>
+                                    <span className={`text-sm font-medium ${isInStock(product.in_stock) ? 'text-green-600' : 'text-green-600'}`}>
                                         {isInStock(product.in_stock) ? 'Mavjud' : 'Mavjud'}
                                     </span>
                                 </div>
