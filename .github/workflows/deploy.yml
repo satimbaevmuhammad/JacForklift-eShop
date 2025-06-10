@@ -1,24 +1,40 @@
 name: Deploy to Server
+
 on:
   push:
     branches: [ master ]
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Deploy to server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        script: |
-          cd /var/www/JacForklift-eShop
-          git pull origin master
-          npm install
-          npm run build
-          sudo supervisorctl restart jac-e-shop
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-          
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd /var/www/JacForklift-eShop
+
+            echo "🔄 Pulling latest code..."
+            git pull origin master
+
+            echo "🧹 Cleaning old build..."
+            rm -rf .next
+            rm -rf node_modules
+            rm -f package-lock.json
+
+            echo "📦 Installing dependencies..."
+            npm install
+
+            echo "🏗 Building project..."
+            npm run build
+
+            echo "♻️ Restarting with Supervisor..."
+            sudo supervisorctl stop jac-e-shop || true
+            sudo fuser -k 3000/tcp || true
+            sudo supervisorctl start jac-e-shop
