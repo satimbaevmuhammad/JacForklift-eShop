@@ -6,7 +6,6 @@ import path from 'path'
 const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
-    appDir: true,
   },
 
   webpack: (config, { webpack }) => {
