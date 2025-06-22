@@ -1,7 +1,7 @@
 // app/page.js
 'use client'
-import { useLanguage } from '@/contexts/LanguageContext'
-import Navbar from '@/components/Navbar'
+import { useLanguage } from '../contexts/LanguageContext'
+import Navbar from '../components/Navbar'
 
 export default function HomePage() {
     const { t, currentLang, isLoading } = useLanguage()
