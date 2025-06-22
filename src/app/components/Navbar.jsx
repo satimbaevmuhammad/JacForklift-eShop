@@ -2,17 +2,47 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from 'react-i18next'
+import i18n, { languages, changeLanguage } from '../../lib/i18n'
 
 const Navbar = () => {
     const router = useRouter()
+    const { t } = useTranslation()
+
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [isCallOpen, setIsCallOpen] = useState(false)
+    const [isLangOpen, setIsLangOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [searchResults, setSearchResults] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [showResults, setShowResults] = useState(false)
+    const [currentLang, setCurrentLang] = useState(i18n.language)
+
     const searchRef = useRef(null)
     const mobileSearchRef = useRef(null)
+    const langRef = useRef(null)
+
+    // Listen to language changes
+    useEffect(() => {
+        const handleLanguageChange = (lng) => {
+            setCurrentLang(lng)
+        }
+
+        i18n.on('languageChanged', handleLanguageChange)
+
+        return () => {
+            i18n.off('languageChanged', handleLanguageChange)
+        }
+    }, [])
+
+    // Current language info
+    const currentLangInfo = languages[currentLang] || languages.uz
+
+    // Handle language change
+    const handleLanguageChange = (langCode) => {
+        changeLanguage(langCode)
+        setIsLangOpen(false)
+    }
 
     // Debounce search function
     useEffect(() => {
@@ -26,16 +56,16 @@ const Navbar = () => {
         }, 300)
 
         return () => clearTimeout(delayedSearch)
-    }, [searchQuery])
+    }, [searchQuery, currentLang])
 
-    // Search API function
+    // FIXED: Search API function with proper response handling
     const searchForklifts = async (query) => {
         if (!query || query.trim().length < 2) return
 
         setIsLoading(true)
         try {
-            console.log('Searching for:', query)
-            const response = await fetch(`https://api.jacforklift.uz/api/api/forklifts/?search=${encodeURIComponent(query)}`, {
+            console.log('Searching for:', query, 'in language:', currentLang)
+            const response = await fetch(`https://api.jacforklift.uz/api/api/forklifts/?search=${encodeURIComponent(query)}&lang=${currentLang}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -50,8 +80,17 @@ const Navbar = () => {
             const data = await response.json()
             console.log('Search results:', data)
 
-            const results = data.results || data.data || data || []
-            setSearchResults(Array.isArray(results) ? results : [])
+            // FIX: Handle different API response formats
+            let results = []
+            if (data.results && Array.isArray(data.results)) {
+                results = data.results
+            } else if (data.data && Array.isArray(data.data)) {
+                results = data.data
+            } else if (Array.isArray(data)) {
+                results = data
+            }
+
+            setSearchResults(results)
             setShowResults(true)
         } catch (error) {
             console.error('Search error:', error)
@@ -92,35 +131,38 @@ const Navbar = () => {
         }, 100)
     }
 
-    // Handle input focus va click
+    // Handle input focus
     const handleInputFocus = () => {
         if (searchQuery.trim().length > 0) {
             setShowResults(true);
         }
     };
 
-    // Close search results when clicking outside
+    // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            const isClickInsideDropdown = event.target.closest('.search-dropdown')
+            const isClickInsideDropdown = event.target.closest('.search-dropdown') ||
+                event.target.closest('.lang-dropdown')
 
             if (isClickInsideDropdown) {
                 return
             }
 
             if (searchRef.current && !searchRef.current.contains(event.target)) {
-                console.log('Closing desktop search dropdown');
                 setShowResults(false)
             }
 
             if (mobileSearchRef.current && !mobileSearchRef.current.contains(event.target)) {
-                console.log('Closing mobile search dropdown');
                 setShowResults(false)
                 setIsSearchOpen(false)
             }
+
+            if (langRef.current && !langRef.current.contains(event.target)) {
+                setIsLangOpen(false)
+            }
         }
 
-        if (showResults || isSearchOpen) {
+        if (showResults || isSearchOpen || isLangOpen) {
             document.addEventListener('mousedown', handleClickOutside)
             document.addEventListener('touchstart', handleClickOutside)
 
@@ -129,7 +171,7 @@ const Navbar = () => {
                 document.removeEventListener('touchstart', handleClickOutside)
             }
         }
-    }, [showResults, isSearchOpen])
+    }, [showResults, isSearchOpen, isLangOpen])
 
     // Image error handler
     const handleImageError = (e) => {
@@ -152,7 +194,7 @@ const Navbar = () => {
                 {isLoading ? (
                     <div className="p-6 text-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-                        <p className="text-gray-600 mt-3 text-sm">Qidirilmoqda...</p>
+                        <p className="text-gray-600 mt-3 text-sm">{t('searching')}</p>
                     </div>
                 ) : searchResults.length > 0 ? (
                     <div className="divide-y divide-gray-100">
@@ -190,7 +232,7 @@ const Navbar = () => {
                                         ) : (
                                             <div className="text-center">
                                                 <svg className="w-8 h-8 text-blue-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v10z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2-2v10z" />
                                                 </svg>
                                             </div>
                                         )}
@@ -207,12 +249,11 @@ const Navbar = () => {
                                         </div>
                                         <p className="text-xs text-gray-600 font-medium mt-1.5 flex items-center gap-1">
                                             <span className="inline-block w-2 h-2 rounded-full bg-green-400"></span>
-                                            Mavjud
+                                            {t('available')}
                                         </p>
                                     </div>
 
                                     <div className="text-right">
-                                   
                                         <div className="flex items-center justify-end">
                                             <svg className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -225,7 +266,7 @@ const Navbar = () => {
                         {searchResults.length > 5 && (
                             <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 text-center border-t border-gray-100">
                                 <p className="text-sm text-gray-700 mb-2">
-                                    Va yana <span className="font-semibold text-blue-600">{searchResults.length - 5}</span> ta natija...
+                                    {t('moreResults')} <span className="font-semibold text-blue-600">{searchResults.length - 5}</span> {t('resultsCount')}
                                 </p>
                                 <div
                                     onClick={(event) => {
@@ -242,7 +283,7 @@ const Navbar = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
-                                    Barcha natijalarni ko'rish
+                                    {t('seeAllResults')}
                                 </div>
                             </div>
                         )}
@@ -254,8 +295,8 @@ const Navbar = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <p className="text-gray-600 text-sm font-medium">Hech narsa topilmadi</p>
-                        <p className="text-gray-400 text-xs mt-1">Boshqa kalit so'z bilan qidiring</p>
+                        <p className="text-gray-600 text-sm font-medium">{t('noResults')}</p>
+                        <p className="text-gray-400 text-xs mt-1">{t('tryOtherKeywords')}</p>
                     </div>
                 )}
             </div>
@@ -288,7 +329,7 @@ const Navbar = () => {
                             </svg>
                             <input
                                 type="text"
-                                placeholder='Forklift qidiring...'
+                                placeholder={t('searchPlaceholder')}
                                 className='bg-transparent outline-none text-white placeholder-white/60 flex-1 text-left text-base'
                                 value={searchQuery}
                                 onChange={handleSearchChange}
@@ -308,8 +349,69 @@ const Navbar = () => {
                     </div>
                 </div>
 
-                {/* Desktop Phone Number */}
-                <div className='hidden md:block'>
+                {/* Desktop Right Side - Language + Phone */}
+                <div className='hidden md:flex items-center gap-4'>
+                    {/* Language Selector - YANGILANGAN STIL */}
+                    <div className='relative' ref={langRef}>
+                        <button
+                            className='group flex items-center gap-2 bg-gradient-to-r from-blue-500/15 via-purple-500/15 to-pink-500/15 backdrop-blur-md rounded-[12px] px-3 py-2 shadow-lg border border-white/25 hover:border-white/40 hover:from-blue-500/25 hover:via-purple-500/25 hover:to-pink-500/25 transition-all duration-200 transform hover:scale-[1.02]'
+                            onClick={() => setIsLangOpen(!isLangOpen)}
+                        >
+                            {/* Globe Icon with Animation */}
+                            <div className='relative'>
+                                <svg className='w-4 h-4 text-white/70 group-hover:text-white transition-all duration-200' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                                    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" stroke="currentColor" strokeWidth="2" />
+                                    <path d="M2 12h20" stroke="currentColor" strokeWidth="2" />
+                                </svg>
+                            </div>
+
+                            {/* Flag */}
+                            <span className='text-lg group-hover:scale-105 transition-transform duration-200'>
+                                {currentLangInfo.flag}
+                            </span>
+
+                            {/* Animated Arrow */}
+                            <svg className={`w-3 h-3 text-white/60 group-hover:text-white transition-all duration-200 ${isLangOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        {/* Language Dropdown - YANGILANGAN STIL */}
+                        {isLangOpen && (
+                            <div className='lang-dropdown absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-white/30 overflow-hidden min-w-[160px] animate-in slide-in-from-top-2 duration-200' style={{ zIndex: 10000 }}>
+                                {Object.values(languages).map((lang) => (
+                                    <button
+                                        key={lang.code}
+                                        className={`w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 group ${currentLang === lang.code ?
+                                                'bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700' :
+                                                'text-gray-700 hover:text-blue-700'
+                                            }`}
+                                        onClick={() => handleLanguageChange(lang.code)}
+                                    >
+                                        {/* Flag */}
+                                        <span className='text-lg group-hover:scale-105 transition-transform duration-200'>
+                                            {lang.flag}
+                                        </span>
+
+                                        {/* Language Name */}
+                                        <span className='font-medium text-sm flex-1'>
+                                            {lang.name}
+                                        </span>
+
+                                        {/* Check Icon for Current Language */}
+                                        {currentLang === lang.code && (
+                                            <svg className='w-4 h-4 text-blue-600' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Phone Number */}
                     <a
                         href="tel:+998949876000"
                         className='flex items-center gap-3 hover:opacity-80 transition-opacity duration-200'
@@ -320,13 +422,62 @@ const Navbar = () => {
                             </svg>
                         </div>
                         <p className='text-white font-medium text-lg'>
-                            +998 94 987 60 00
+                            {t('phone')}
                         </p>
                     </a>
                 </div>
 
                 {/* Mobile Icons */}
                 <div className='md:hidden flex items-center gap-3'>
+                    {/* Language Selector - Mobile YANGILANGAN STIL */}
+                    <div className='relative' ref={langRef}>
+                        <button
+                            className='group bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-md p-2.5 rounded-xl shadow-lg border border-white/25 hover:border-white/40 hover:from-blue-500/30 hover:via-purple-500/30 hover:to-pink-500/30 transition-all duration-200 transform hover:scale-105 active:scale-95'
+                            onClick={() => setIsLangOpen(!isLangOpen)}
+                        >
+                            <div className='relative'>
+                                <span className='text-lg drop-shadow-md group-hover:scale-105 transition-transform duration-200'>
+                                    {currentLangInfo.flag}
+                                </span>
+                                {/* Active Indicator */}
+                                <div className='absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-400 rounded-full border border-white shadow-sm'></div>
+                            </div>
+                        </button>
+
+                        {/* Mobile Language Dropdown - YANGILANGAN STIL */}
+                        {isLangOpen && (
+                            <div className='lang-dropdown absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-white/30 overflow-hidden min-w-[140px] animate-in slide-in-from-top-2 duration-200' style={{ zIndex: 10000 }}>
+                                {Object.values(languages).map((lang) => (
+                                    <button
+                                        key={lang.code}
+                                        className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 group ${currentLang === lang.code ?
+                                                'bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700' :
+                                                'text-gray-700 hover:text-blue-700'
+                                            }`}
+                                        onClick={() => handleLanguageChange(lang.code)}
+                                    >
+                                        {/* Mobile Flag */}
+                                        <span className='text-base group-hover:scale-105 transition-transform duration-200'>
+                                            {lang.flag}
+                                        </span>
+
+                                        {/* Mobile Language Name */}
+                                        <span className='font-medium text-xs flex-1'>
+                                            {lang.name}
+                                        </span>
+
+                                        {/* Mobile Check Icon */}
+                                        {currentLang === lang.code && (
+                                            <svg className='w-3 h-3 text-blue-600' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
                     {/* Search Icon - Mobile */}
                     <div className='relative' ref={mobileSearchRef} style={{ zIndex: 10001 }}>
                         <button
@@ -344,26 +495,15 @@ const Navbar = () => {
                         {/* Mobile Search Overlay */}
                         {isSearchOpen && (
                             <div className="fixed top-0 left-0 right-0 h-[100px] bg-black/30 backdrop-blur-[60px]" style={{ zIndex: 10000 }}>
-                                {/* Search input container */}
                                 <div className="flex justify-center items-center h-full px-4">
                                     <div className="relative w-full max-w-[343px]" style={{ zIndex: 10001 }}>
-                                        <div
-                                            className='flex items-center gap-3 bg-white/20 backdrop-blur-md rounded-[12px] px-4 py-3 shadow-lg border border-white/30 hover:bg-white/25 transition-all duration-200'
-                                            style={{
-                                                height: '48px',
-                                                paddingTop: '14px',
-                                                paddingRight: '16px',
-                                                paddingBottom: '14px',
-                                                paddingLeft: '16px',
-                                                borderRadius: '12px'
-                                            }}
-                                        >
+                                        <div className='flex items-center gap-3 bg-white/20 backdrop-blur-md rounded-[12px] px-4 py-3 shadow-lg border border-white/30 hover:bg-white/25 transition-all duration-200'>
                                             <svg className='w-5 h-5 text-white/70' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                             </svg>
                                             <input
                                                 type="text"
-                                                placeholder='Qidiruv...'
+                                                placeholder={t('searchPlaceholderMobile')}
                                                 className='bg-transparent outline-none text-white placeholder-white/60 flex-1 text-left text-base'
                                                 value={searchQuery}
                                                 onChange={handleSearchChange}
@@ -420,7 +560,7 @@ const Navbar = () => {
                                         <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                                     </svg>
                                     <p className='text-gray-700 font-medium'>
-                                        +998 94 987 60 00
+                                        {t('phone')}
                                     </p>
                                 </a>
                             </div>

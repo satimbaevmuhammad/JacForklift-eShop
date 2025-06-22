@@ -2,14 +2,18 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useTranslation } from 'react-i18next';
+import i18n from '../../lib/i18n';
 
 const Products = () => {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentLang, setCurrentLang] = useState(i18n.language);
 
   // Load more states
   const [currentPage, setCurrentPage] = useState(1);
@@ -17,9 +21,22 @@ const Products = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
 
+  // Listen to language changes
+  useEffect(() => {
+    const handleLanguageChange = (lng) => {
+      setCurrentLang(lng);
+    };
+
+    i18n.on('languageChanged', handleLanguageChange);
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, []);
+
   useEffect(() => {
     fetchInitialData();
-  }, []);
+  }, [currentLang]); // Refetch when language changes
 
   useEffect(() => {
     filterProducts();
@@ -30,8 +47,9 @@ const Products = () => {
       setLoading(true);
       setError(null);
 
+      // API request with language parameter
       const productsResponse = await fetch(
-        `https://api.jacforklift.uz/api/api/forklifts/?page=1&page_size=10`
+        `https://api.jacforklift.uz/api/api/forklifts/?page=1&page_size=10&lang=${currentLang}`
       );
 
       if (!productsResponse.ok) {
@@ -52,9 +70,9 @@ const Products = () => {
         console.warn("No forklifts found in API response");
       }
 
-      // Fetch all products for categories
+      // Fetch all products for categories with language parameter
       const allProductsResponse = await fetch(
-        "https://api.jacforklift.uz/api/api/forklifts/?page_size=1000"
+        `https://api.jacforklift.uz/api/api/forklifts/?page_size=1000&lang=${currentLang}`
       );
 
       if (allProductsResponse.ok) {
@@ -71,10 +89,11 @@ const Products = () => {
         setCategories(categoriesData);
       }
 
+      setCurrentPage(1); // Reset page when language changes
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
-      setError("Ma'lumotlarni yuklashda xato yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.");
+      setError(t('error') || "Ma'lumotlarni yuklashda xato yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.");
       setLoading(false);
     }
   };
@@ -86,8 +105,9 @@ const Products = () => {
       setLoadingMore(true);
       const nextPage = currentPage + 1;
 
+      // API request with language parameter
       const productsResponse = await fetch(
-        `https://api.jacforklift.uz/api/api/forklifts/?page=${nextPage}&page_size=10`
+        `https://api.jacforklift.uz/api/api/forklifts/?page=${nextPage}&page_size=10&lang=${currentLang}`
       );
 
       if (!productsResponse.ok) {
@@ -132,9 +152,13 @@ const Products = () => {
   };
 
   const getCategoryName = (forkliftType) => {
-    return forkliftType
-      ? forkliftType.charAt(0).toUpperCase() + forkliftType.slice(1)
-      : "Noma'lum kategoriya";
+    // Try to get translated category name, fallback to original
+    const translatedName = t(forkliftType);
+    return translatedName !== forkliftType
+      ? translatedName
+      : forkliftType
+        ? forkliftType.charAt(0).toUpperCase() + forkliftType.slice(1)
+        : t('category') || "Noma'lum kategoriya";
   };
 
   const formatPrice = (price) => {
@@ -172,13 +196,18 @@ const Products = () => {
     if (product.images && product.images.length > 0 && product.images[0].alt_text) {
       return product.images[0].alt_text;
     }
-    return product.name || "Forklift image";
+    return product.name || t('product.defaultName') || "Forklift image";
   };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-16 w-16 sm:h-32 sm:w-32 border-b-2 border-orange-500"></div>
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-16 w-16 sm:h-32 sm:w-32 border-b-2 border-orange-500"></div>
+          <p className="text-gray-600 text-sm sm:text-base text-center">
+            {t('loading') || 'Yuklanmoqda...'}
+          </p>
+        </div>
       </div>
     );
   }
@@ -186,13 +215,13 @@ const Products = () => {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h3 className="text-lg sm:text-xl font-semibold text-red-600">{error}</h3>
+        <div className="text-center bg-white p-4 sm:p-8 rounded-lg shadow-lg w-full max-w-md">
+          <h3 className="text-lg sm:text-xl font-semibold text-red-600 mb-4">{error}</h3>
           <button
             onClick={fetchInitialData}
             className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
           >
-            Qayta urinish
+            {t('retry') || 'Qayta urinish'}
           </button>
         </div>
       </div>
@@ -205,12 +234,14 @@ const Products = () => {
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl sm:text-4xl font-black text-gray-900">Mahsulotlar</h1>
+            <h1 className="text-2xl sm:text-4xl font-black text-gray-900">
+              {t('products') || 'Mahsulotlar'}
+            </h1>
             <button
               onClick={() => handleCategoryChange("all")}
               className="bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-colors border-2 border-orange-400 hover:border-orange-500 text-sm sm:text-base"
             >
-              Barchasi →
+              {t('seeAllResults') || 'Barchasi'} →
             </button>
           </div>
           {/* Category Filter */}
@@ -222,7 +253,7 @@ const Products = () => {
                 : "bg-white text-gray-700 border-2 border-orange-400 hover:border-orange-500"
                 }`}
             >
-              Hammasi
+              {t('seeAllResults') || 'Hammasi'}
             </button>
             {categories.map((category) => (
               <button
@@ -233,7 +264,7 @@ const Products = () => {
                   : "bg-white text-gray-700 border-2 border-orange-400 hover:border-orange-500"
                   }`}
               >
-                {category.name}
+                {getCategoryName(category.name)}
               </button>
             ))}
           </div>
@@ -277,7 +308,7 @@ const Products = () => {
                             WebkitBoxOrient: "vertical",
                           }}
                         >
-                          {product.name || "Unnamed Product"}
+                          {product.name || t('product.defaultName') || "Unnamed Product"}
                         </h3>
 
                         <div className="flex justify-between items-center mt-auto">
@@ -287,7 +318,7 @@ const Products = () => {
                             </span>
                           ) : (
                             <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-1 rounded border border-green-200">
-                              Mavjud
+                              {t('available') || 'Mavjud'}
                             </span>
                           )}
                           <span className="text-xs text-gray-500">
@@ -311,10 +342,10 @@ const Products = () => {
                     {loadingMore ? (
                       <div className="flex items-center space-x-2">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
-                        <span>Yuklanmoqda...</span>
+                        <span>{t('loading') || 'Yuklanmoqda...'}</span>
                       </div>
                     ) : (
-                      "Показать ещё 10"
+                      t('moreResults') || "Показать ещё 10"
                     )}
                   </button>
                 </div>
@@ -324,16 +355,16 @@ const Products = () => {
             <div className="text-center py-8 sm:py-16 bg-white rounded-xl border-2 border-orange-200 mx-2 sm:mx-0">
               <div className="text-gray-400 text-4xl sm:text-6xl mb-4">🔍</div>
               <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
-                Mahsulot topilmadi
+                {t('noResults') || 'Mahsulot topilmadi'}
               </h3>
               <p className="text-gray-500 mb-4 sm:mb-6 text-sm sm:text-base px-4">
-                Qidiruv parametrlaringizni o'zgartirib ko'ring
+                {t('tryOtherKeywords') || "Qidiruv parametrlaringizni o'zgartirib ko'ring"}
               </p>
               <button
                 onClick={() => handleCategoryChange("all")}
                 className="bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-colors duration-200 border-2 border-orange-400 hover:border-orange-500 text-sm sm:text-base"
               >
-                Barchasini ko'rsatish
+                {t('seeAllResults') || 'Barchasini ko\'rsatish'}
               </button>
             </div>
           )}

@@ -1,66 +1,315 @@
 "use client"
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
+import i18n from '../../lib/i18n'
 
 const Categories = () => {
-    // Statik kategoriyalar ma'lumotlari
-    const categories = [
-        {
-            id: 1,
-            name: "Dizelli transportlar",
-            image: "/traktr.png",
-            key: "diesel"
-        },
-        {
-            id: 2,
-            name: "Elektri transportlar",
-            image: "/pts.png",
-            key: "Electric"
-        },
-        {
-            id: 3,
-            name: "Benzinli transportlar",
-            image: "/orn.png",
-            key: "Petrol"
-        },
-        {
-            id: 4,
-            name: "LPG transportlari",
-            image: "/traktr.png",
-            key: "lpg"
-        },
-        {
-            id: 5,
-            name: "Elektr pallet yuk mashinasi",
-            image: "/pall.png",
-            key: "electric pallet"
-        },
-        {
-            id: 6,
-            name: "Elektr stacker mashinaslari",
-            image: "/stacker.png",
-            key: "PALLET STACKER"
-        },
-        {
-            id: 7,
-            name: "Reach truck forklift",
-            image: "/reach-truck.png",
-            key: "REACH TRUCK"
-        },
-        {
-            id: 8,
-            name: "Handle pallet forklift",
-            image: "/handle-pallet.png",
-            key: "Handle Pallets"
-        },
-        {
-            id: 9,
-            name: "Texnika extiyot qismlarin",
-            image: "/spare-parts.png",
-            key: "spare"
+    const { t } = useTranslation()
+    const [categories, setCategories] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const [currentLang, setCurrentLang] = useState(i18n.language)
+
+    // Listen to language changes
+    useEffect(() => {
+        const handleLanguageChange = (lng) => {
+            setCurrentLang(lng)
         }
-    ]
+
+        i18n.on('languageChanged', handleLanguageChange)
+
+        return () => {
+            i18n.off('languageChanged', handleLanguageChange)
+        }
+    }, [])
+
+    useEffect(() => {
+        fetchCategories()
+    }, [currentLang])
+
+    // Kategoriya nomini tarjima qilish funksiyasi
+    const getTranslatedCategoryName = (categoryName) => {
+        return t(categoryName) || categoryName
+    }
+
+    // Rasm yo'lini tekshirish va to'g'rilash funksiyasi
+    const getImagePath = (imagePath) => {
+        if (!imagePath) return null
+
+        // Agar rasm yo'li to'liq URL bo'lsa
+        if (imagePath.startsWith('http')) {
+            return imagePath
+        }
+
+        // Agar rasm yo'li / bilan boshlanmasa, qo'shish
+        return imagePath.startsWith('/') ? imagePath : `/${imagePath}`
+    }
+
+    const fetchCategories = async () => {
+        try {
+            setLoading(true)
+            console.log('Fetching categories with lang:', currentLang)
+
+            const response = await fetch(`https://api.jacforklift.uz/api/api/forklifts/?lang=${currentLang}`)
+
+            if (!response.ok) {
+                throw new Error('Kategoriyalarni yuklashda xatolik')
+            }
+
+            const data = await response.json()
+            console.log('API response:', data)
+
+            // API dan kelgan ma'lumotlarni to'g'ri handle qilish
+            let itemsArray = []
+
+            console.log('API data structure:', {
+                hasResults: !!data.results,
+                isArray: Array.isArray(data),
+                resultsIsArray: Array.isArray(data.results),
+                keys: Object.keys(data)
+            })
+
+            if (data.results && Array.isArray(data.results)) {
+                itemsArray = data.results
+                console.log('Using data.results, length:', itemsArray.length)
+            } else if (Array.isArray(data)) {
+                itemsArray = data
+                console.log('Using data directly, length:', itemsArray.length)
+            } else {
+                console.log('Unexpected API response format:', data)
+                console.log('Falling back to static categories')
+                itemsArray = []
+            }
+
+            let formattedCategories = []
+
+            if (itemsArray.length > 0) {
+                // Kategoriyalar uchun unikal ma'lumotlarni ajratib olish
+                const categoryMap = new Map()
+
+                itemsArray.forEach((item, index) => {
+                    const categoryKey = item.category || item.type || item.fuel_type || 'other'
+                    const categoryName = item.category_name || item.type_name || item.fuel_type || categoryKey
+
+                    if (!categoryMap.has(categoryKey)) {
+                        categoryMap.set(categoryKey, {
+                            id: categoryMap.size + 1,
+                            name: categoryName,
+                            image: getImagePath(item.image || item.photo),
+                            key: categoryKey,
+                            description: item.description || null,
+                            count: 1
+                        })
+                    } else {
+                        const existing = categoryMap.get(categoryKey)
+                        existing.count += 1
+                        // Agar yangi itemda rasm bor va eskisida yo'q bo'lsa, yangilansin
+                        if (!existing.image && (item.image || item.photo)) {
+                            existing.image = getImagePath(item.image || item.photo)
+                        }
+                    }
+                })
+
+                formattedCategories = Array.from(categoryMap.values())
+                console.log('Generated categories from API:', formattedCategories)
+            }
+
+            // Agar API dan kategoriyalar kam kelsa yoki yo'q bo'lsa, fallback kategoriyalarni qo'shish
+            if (formattedCategories.length < 3) {
+                console.log('Not enough categories from API, adding fallbacks')
+                const fallbackCategories = [
+                    {
+                        id: 101,
+                        name: "Dizelli transportlar",
+                        image: "/traktr.png",
+                        key: "diesel"
+                    },
+                    {
+                        id: 102,
+                        name: "Elektri transportlar",
+                        image: "/electric-forklift.png", // Yangi rasm nomi
+                        key: "Electric"
+                    },
+                    {
+                        id: 103,
+                        name: "Benzinli transportlar",
+                        image: "/orn.png",
+                        key: "Petrol"
+                    },
+                    {
+                        id: 104,
+                        name: "LPG transportlari",
+                        image: "/lpg-forklift.png", // Yangi rasm nomi
+                        key: "lpg"
+                    },
+                    {
+                        id: 105,
+                        name: "Elektr pallet yuk mashinasi",
+                        image: "/pall.png",
+                        key: "electric pallet"
+                    },
+                    {
+                        id: 106,
+                        name: "Elektr stacker mashinaslari",
+                        image: "/stacker.png",
+                        key: "PALLET STACKER"
+                    },
+                    {
+                        id: 107,
+                        name: "Reach truck forklift",
+                        image: "/reach-truck.png",
+                        key: "REACH TRUCK"
+                    },
+                    {
+                        id: 108,
+                        name: "Handle pallet forklift",
+                        image: "/handle-pallet.png",
+                        key: "Handle Pallets"
+                    },
+                    {
+                        id: 109,
+                        name: "Texnika extiyot qismlarin",
+                        image: "/spare-parts.png",
+                        key: "spare"
+                    }
+                ]
+
+                // Mavjud kategoriyalar kalitlarini olish
+                const existingKeys = formattedCategories.map(cat => cat.key)
+
+                // Fallback kategoriyalardan faqat mavjud bo'lmaganlarini qo'shish
+                fallbackCategories.forEach(fallbackCat => {
+                    if (!existingKeys.includes(fallbackCat.key)) {
+                        formattedCategories.push(fallbackCat)
+                    }
+                })
+            }
+
+            console.log('Final categories:', formattedCategories)
+            setCategories(formattedCategories)
+            setError(null)
+        } catch (error) {
+            console.error('Ma\'lumotlarni yuklashda xato:', error)
+            setError(error.message)
+
+            // Fallback kategoriyalar - rasm yo'llari yangilangan
+            const fallbackCategories = [
+                {
+                    id: 1,
+                    name: "Dizelli transportlar",
+                    image: "/traktr.png",
+                    key: "diesel"
+                },
+                {
+                    id: 2,
+                    name: "Elektri transportlar",
+                    image: "/electric-forklift.png", // Yangi rasm nomi
+                    key: "Electric"
+                },
+                {
+                    id: 3,
+                    name: "Benzinli transportlar",
+                    image: "/orn.png",
+                    key: "Petrol"
+                },
+                {
+                    id: 4,
+                    name: "LPG transportlari",
+                    image: "/lpg-forklift.png", // Yangi rasm nomi
+                    key: "lpg"
+                },
+                {
+                    id: 5,
+                    name: "Elektr pallet yuk mashinasi",
+                    image: "/pall.png",
+                    key: "electric pallet"
+                },
+                {
+                    id: 6,
+                    name: "Elektr stacker mashinaslari",
+                    image: "/stacker.png",
+                    key: "PALLET STACKER"
+                },
+                {
+                    id: 7,
+                    name: "Reach truck forklift",
+                    image: "/reach-truck.png",
+                    key: "REACH TRUCK"
+                },
+                {
+                    id: 8,
+                    name: "Handle pallet forklift",
+                    image: "/handle-pallet.png",
+                    key: "Handle Pallets"
+                },
+                {
+                    id: 9,
+                    name: "Texnika extiyot qismlarin",
+                    image: "/spare-parts.png",
+                    key: "spare"
+                }
+            ]
+            setCategories(fallbackCategories)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    // Kategoriya bosilganda ishlaydigan funksiya
+    const handleCategoryClick = (category) => {
+        // Kategoriya ma'lumotlarini localStorage ga saqlash
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('selectedCategory', JSON.stringify({
+                id: category.id,
+                name: category.name,
+                key: category.key,
+                image: category.image
+            }))
+        }
+
+        console.log('Category clicked:', category)
+    }
+
+    // Rasm yuklashda xatolik bo'lganida ishlaydi
+    const handleImageError = (e, category) => {
+        console.log(`Image failed to load for category: ${category.name}`, category.image)
+        e.target.style.display = 'none'
+        const fallbackElement = e.target.nextElementSibling
+        if (fallbackElement) {
+            fallbackElement.style.display = 'flex'
+        }
+    }
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 md:bg-[url('/bgimg.png')] md:bg-cover py-4 md:py-6 lg:py-12 px-4 md:px-3 lg:px-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="mb-6 md:mb-6 lg:mb-12">
+                        <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-black text-center md:text-left">
+                            {t('categories')}
+                        </h1>
+                    </div>
+
+                    {/* Loading skeleton */}
+                    <div className="flex flex-col space-y-6 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 lg:gap-8 xl:gap-10 md:space-y-0">
+                        {[...Array(6)].map((_, index) => (
+                            <div key={index} className="bg-white rounded-xl shadow-sm p-5 animate-pulse">
+                                <div className="flex flex-row items-center md:flex-col">
+                                    <div className="flex-1 pr-6 md:pr-0 md:mb-4">
+                                        <div className="h-6 bg-gray-200 rounded mb-4"></div>
+                                        <div className="w-16 h-8 bg-gray-200 rounded md:hidden"></div>
+                                    </div>
+                                    <div className="w-32 h-32 bg-gray-200 rounded-lg md:w-full md:h-40"></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 md:bg-[url('/bgimg.png')] md:bg-cover py-4 md:py-6 lg:py-12 px-4 md:px-3 lg:px-6">
@@ -68,8 +317,20 @@ const Categories = () => {
                 {/* Header */}
                 <div className="mb-6 md:mb-6 lg:mb-12">
                     <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-black text-center md:text-left">
-                        Kategoriyalar
+                        {t('categories')}
                     </h1>
+                    {error && (
+                        <div className="mt-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded-lg">
+                            <p className="text-sm">
+                                {t('api_error_fallback')}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Debug ma'lumotlari - development da ko'rish uchun */}
+                    <div className="mt-2 text-sm text-gray-500">
+                        {t('home')}: {currentLang} | {t('categories')}: {categories.length}
+                    </div>
                 </div>
 
                 {/* Categories Grid - Mobile: flex column, Desktop: grid */}
@@ -78,6 +339,7 @@ const Categories = () => {
                         <Link
                             key={category.id}
                             href={`/cattegoryDatail/${category.id}`}
+                            onClick={() => handleCategoryClick(category)}
                             className="bg-white rounded-xl md:rounded-xl lg:rounded-2xl shadow-sm hover:shadow-lg md:hover:shadow-2xl md:hover:shadow-orange-500/20 transition-all duration-300 md:duration-500 cursor-pointer border border-gray-100 hover:border-orange-200 md:transform md:hover:-translate-y-1 lg:hover:-translate-y-2 md:hover:scale-102 lg:hover:scale-105 group
                             /* Mobile: horizontal layout */
                             flex flex-row items-center p-5 min-h-[120px]
@@ -91,7 +353,7 @@ const Categories = () => {
                             {/* Mobile Layout */}
                             <div className="flex-1 pr-6 md:hidden flex flex-col justify-between h-full">
                                 <h3 className="text-xl font-bold text-black leading-tight group-hover:text-orange-600 transition-colors duration-300 mb-4">
-                                    {category.name}
+                                    {getTranslatedCategoryName(category.name)}
                                 </h3>
                                 <img
                                     src="/jac.png"
@@ -102,17 +364,15 @@ const Categories = () => {
 
                             {/* Mobile Image */}
                             <div className="w-32 h-32 bg-transparent rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 md:hidden">
-                                {category.image ? (
+                                {category.image && (
                                     <img
                                         src={category.image}
-                                        alt={category.name}
+                                        alt={getTranslatedCategoryName(category.name)}
                                         className="max-w-full max-h-full object-contain"
-                                        onError={(e) => {
-                                            e.target.style.display = 'none'
-                                            e.target.nextElementSibling.style.display = 'flex'
-                                        }}
+                                        onError={(e) => handleImageError(e, category)}
+                                        onLoad={() => console.log(`Image loaded successfully: ${category.image}`)}
                                     />
-                                ) : null}
+                                )}
 
                                 {/* Mobile Fallback Icon */}
                                 <div
@@ -124,13 +384,21 @@ const Categories = () => {
                                         fill="currentColor"
                                         viewBox="0 0 200 150"
                                     >
-                                        <rect x="10" y="80" width="80" height="40" rx="5" fill="#FF6B35" />
-                                        <rect x="90" y="70" width="30" height="50" rx="3" fill="#FF6B35" />
+                                        {/* Electric forklift icon with battery indicator */}
+                                        <rect x="10" y="80" width="80" height="40" rx="5" fill="#10B981" />
+                                        <rect x="90" y="70" width="30" height="50" rx="3" fill="#10B981" />
                                         <rect x="40" y="50" width="35" height="30" rx="3" fill="#333" opacity="0.8" />
                                         <rect x="115" y="20" width="8" height="80" fill="#666" />
                                         <rect x="125" y="25" width="6" height="70" fill="#666" />
                                         <rect x="130" y="45" width="40" height="4" fill="#666" />
                                         <rect x="130" y="55" width="40" height="4" fill="#666" />
+
+                                        {/* Electric indicator - battery symbol */}
+                                        <rect x="15" y="85" width="20" height="12" rx="2" fill="#FFF" opacity="0.9" />
+                                        <rect x="17" y="87" width="16" height="8" rx="1" fill="#10B981" />
+                                        <rect x="35" y="89" width="2" height="4" fill="#FFF" />
+
+                                        {/* Wheels */}
                                         <circle cx="25" cy="125" r="12" fill="#333" />
                                         <circle cx="65" cy="125" r="12" fill="#333" />
                                         <circle cx="105" cy="125" r="8" fill="#333" />
@@ -147,7 +415,7 @@ const Categories = () => {
                                 <div className="hidden md:block p-5 sm:p-6 pb-3">
                                     <div className="flex items-start justify-between mb-4">
                                         <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-black leading-tight max-w-[200px] sm:max-w-[250px] group-hover:text-orange-600 transition-colors duration-300">
-                                            {category.name}
+                                            {getTranslatedCategoryName(category.name)}
                                         </h3>
                                         <div className="flex-shrink-0 ml-4 sm:ml-6">
                                             <img
@@ -162,17 +430,15 @@ const Categories = () => {
                                 {/* Image Container - Desktop */}
                                 <div className="hidden md:block px-5 sm:px-6 pb-5 sm:pb-6 pt-2">
                                     <div className="flex items-center justify-center h-32 sm:h-36 lg:h-40 xl:h-44 rounded-lg sm:rounded-xl overflow-hidden">
-                                        {category.image ? (
+                                        {category.image && (
                                             <img
                                                 src={category.image}
-                                                alt={category.name}
+                                                alt={getTranslatedCategoryName(category.name)}
                                                 className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105 sm:group-hover:scale-110"
-                                                onError={(e) => {
-                                                    e.target.style.display = 'none'
-                                                    e.target.nextElementSibling.style.display = 'flex'
-                                                }}
+                                                onError={(e) => handleImageError(e, category)}
+                                                onLoad={() => console.log(`Desktop image loaded: ${category.image}`)}
                                             />
-                                        ) : null}
+                                        )}
 
                                         {/* Fallback Forklift Icon - Desktop */}
                                         <div
@@ -185,13 +451,26 @@ const Categories = () => {
                                                     fill="currentColor"
                                                     viewBox="0 0 200 150"
                                                 >
-                                                    <rect x="10" y="80" width="80" height="40" rx="5" fill="#FF6B35" />
-                                                    <rect x="90" y="70" width="30" height="50" rx="3" fill="#FF6B35" />
+                                                    {/* Dynamic color based on category */}
+                                                    <rect x="10" y="80" width="80" height="40" rx="5"
+                                                        fill={category.key === 'Electric' ? '#10B981' : '#FF6B35'} />
+                                                    <rect x="90" y="70" width="30" height="50" rx="3"
+                                                        fill={category.key === 'Electric' ? '#10B981' : '#FF6B35'} />
                                                     <rect x="40" y="50" width="35" height="30" rx="3" fill="#333" opacity="0.8" />
                                                     <rect x="115" y="20" width="8" height="80" fill="#666" />
                                                     <rect x="125" y="25" width="6" height="70" fill="#666" />
                                                     <rect x="130" y="45" width="40" height="4" fill="#666" />
                                                     <rect x="130" y="55" width="40" height="4" fill="#666" />
+
+                                                    {/* Electric indicator for electric categories */}
+                                                    {category.key === 'Electric' && (
+                                                        <>
+                                                            <rect x="15" y="85" width="20" height="12" rx="2" fill="#FFF" opacity="0.9" />
+                                                            <rect x="17" y="87" width="16" height="8" rx="1" fill="#10B981" />
+                                                            <rect x="35" y="89" width="2" height="4" fill="#FFF" />
+                                                        </>
+                                                    )}
+
                                                     <circle cx="25" cy="125" r="12" fill="#333" />
                                                     <circle cx="65" cy="125" r="12" fill="#333" />
                                                     <circle cx="105" cy="125" r="8" fill="#333" />
