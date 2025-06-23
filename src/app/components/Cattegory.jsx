@@ -128,7 +128,7 @@ const Categories = () => {
                     },
                     {
                         id: 102,
-                        name: "Elektri transportlar",
+                        name: "Elektrik transportlar",
                         image: "/electric-forklift.png", // Yangi rasm nomi
                         key: "Electric"
                     },
@@ -170,7 +170,7 @@ const Categories = () => {
                     },
                     {
                         id: 109,
-                        name: "Texnika extiyot qismlarin",
+                        name: "Texnika extiyot qismlari",
                         image: "/spare-parts.png",
                         key: "spare"
                     }
