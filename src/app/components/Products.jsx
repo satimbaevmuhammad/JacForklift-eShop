@@ -273,41 +273,10 @@ const handlePageChange = (page) => {
             <h1 className="text-2xl sm:text-4xl font-black text-gray-900">
               {t('products') || 'Mahsulotlar'}
             </h1>
-            <div className="text-sm text-gray-600">
-              {totalProducts > 0 && (
-                <span>
-                  {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalProducts)} {t('of') || 'dan'} {totalProducts}
-                </span>
-              )}
-            </div>
           </div>
           
           {/* Category Filter */}
-          <div className="flex flex-wrap gap-2 sm:gap-3">
-            <button
-              onClick={() => handleCategoryChange("all")}
-              className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-colors text-sm sm:text-base ${
-                selectedCategory === "all"
-                  ? "bg-orange-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              {t('all') || 'Barchasi'}
-            </button>
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => handleCategoryChange(category.value)}
-                className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-colors text-sm sm:text-base ${
-                  selectedCategory === category.value
-                    ? "bg-orange-500 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
-              >
-                {getCategoryName(category.name)}
-              </button>
-            ))}
-          </div>
+       
         </div>
       </div>
 
@@ -426,17 +395,7 @@ const handlePageChange = (page) => {
                 </div>
               )}
 
-              {/* Pagination Info */}
-              {totalPages > 1 && (
-                <div className="text-center mt-4 text-sm text-gray-600">
-                  {t('page') || 'Sahifa'} {currentPage} {t('of') || 'dan'} {totalPages} 
-                  {totalProducts > 0 && (
-                    <span className="ml-2">
-                      ({totalProducts} {t('total') || 'jami'} {t('products') || 'mahsulot'})
-                    </span>
-                  )}
-                </div>
-              )}
+          
             </>
           ) : (
             <div className="text-center py-8 sm:py-16 bg-white rounded-xl border-2 border-orange-200 mx-2 sm:mx-0">

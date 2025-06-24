@@ -441,9 +441,7 @@ const Categories = () => {
                     )}
 
                     {/* Debug ma'lumotlari */}
-                    <div className="mt-2 text-sm text-gray-500">
-                        {t('home')}: {currentLang} | {t('categories')}: {categories.length}
-                    </div>
+                  
                 </div>
 
                 {/* Categories Grid */}
