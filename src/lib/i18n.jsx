@@ -38,7 +38,7 @@ const resources = {
             "moreResults": "Yana",
             "resultsCount": "ta natija",
             "seeAllResults": "Barcha natijalarni ko'rish",
-            "phone": "+998 94 987 60 00",
+            "phone": "+998983095550",
             "call": "Qo'ng'iroq qilish",
             "contact": "Bog'lanish",
             
@@ -185,7 +185,7 @@ const resources = {
             "moreResults": "Еще",
             "resultsCount": "результатов",
             "seeAllResults": "Посмотреть все результаты",
-            "phone": "+998 94 987 60 00",
+            "phone": "+998983095550",
             "call": "Позвонить",
             "contact": "Контакт",
             
@@ -332,7 +332,7 @@ const resources = {
             "moreResults": "More",
             "resultsCount": "results",
             "seeAllResults": "See all results",
-            "phone": "+998 94 987 60 00",
+            "phone": "+998983095550",
             "call": "Call",
             "contact": "Contact",
             
