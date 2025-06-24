@@ -29,9 +29,213 @@ const Categories = () => {
         fetchCategories()
     }, [currentLang])
 
-    // Kategoriya nomini tarjima qilish funksiyasi
-    const getTranslatedCategoryName = (categoryName) => {
-        return t(categoryName) || categoryName
+    // Kategoriya key va nomlarini mapping qilish - har til uchun
+    const getCategoryMapping = () => {
+        const categoryMapping = {
+            // Diesel kategoriyalari
+            'diesel': {
+                'uz': 'Dizelli transportlar',
+                'en': 'Diesel Vehicles',
+                'ru': 'Дизельные транспортные средства'
+            },
+            'Diesel': {
+                'uz': 'Dizelli transportlar',
+                'en': 'Diesel Vehicles',
+                'ru': 'Дизельные транспортные средства'
+            },
+            // Electric kategoriyalari
+            'Electric': {
+                'uz': 'Elektri transportlar',
+                'en': 'Electric Vehicles',
+                'ru': 'Электрические транспортные средства'
+            },
+            'electric': {
+                'uz': 'Elektri transportlar',
+                'en': 'Electric Vehicles',
+                'ru': 'Электрические транспортные средства'
+            },
+            // Petrol kategoriyalari
+            'Petrol': {
+                'uz': 'Benzinli transportlar',
+                'en': 'Petrol Vehicles',
+                'ru': 'Бензиновые транспортные средства'
+            },
+            'petrol': {
+                'uz': 'Benzinli transportlar',
+                'en': 'Petrol Vehicles',
+                'ru': 'Бензиновые транспортные средства'
+            },
+            // LPG kategoriyalari
+            'lpg': {
+                'uz': 'LPG transportlari',
+                'en': 'LPG Vehicles',
+                'ru': 'Транспорт на LPG'
+            },
+            'LPG': {
+                'uz': 'LPG transportlari',
+                'en': 'LPG Vehicles',
+                'ru': 'Транспорт на LPG'
+            },
+            // Electric pallet
+            'electric pallet': {
+                'uz': 'Elektr pallet yuk mashinasi',
+                'en': 'Electric Pallet Trucks',
+                'ru': 'Электрические паллетные погрузчики'
+            },
+            'Electric pallet': {
+                'uz': 'Elektr pallet yuk mashinasi',
+                'en': 'Electric Pallet Trucks',
+                'ru': 'Электрические паллетные погрузчики'
+            },
+            // Pallet stacker
+            'PALLET STACKER': {
+                'uz': 'Elektr stacker mashinaslari',
+                'en': 'Electric Stackers',
+                'ru': 'Электрические штабелеры'
+            },
+            'pallet stacker': {
+                'uz': 'Elektr stacker mashinaslari',
+                'en': 'Electric Stackers',
+                'ru': 'Электрические штабелеры'
+            },
+            // Reach truck
+            'REACH TRUCK': {
+                'uz': 'Ichkariga cho\'zilib ishlaydigan forklift',
+                'en': 'Reach Truck Forklifts',
+                'ru': 'Ричтрак погрузчики'
+            },
+            'reach truck': {
+                'uz': 'Ichkariga cho\'zilib ishlaydigan forklift',
+                'en': 'Reach Truck Forklifts',
+                'ru': 'Ричтрак погрузчики'
+            },
+            'Reach truck forklift': {
+                'uz': 'Ichkariga cho\'zilib ishlaydigan forklift',
+                'en': 'Reach Truck Forklifts',
+                'ru': 'Ричтрак погрузчики'
+            },
+            // Handle pallets
+            'Handle Pallets': {
+                'uz': 'Tutqich, qo\'l bilan boshqarish',
+                'en': 'Manual Pallet Trucks',
+                'ru': 'Ручные паллетные тележки'
+            },
+            'handle pallets': {
+                'uz': 'Tutqich, qo\'l bilan boshqarish',
+                'en': 'Manual Pallet Trucks',
+                'ru': 'Ручные паллетные тележки'
+            },
+            'Handle pallet forklift': {
+                'uz': 'Tutqich, qo\'l bilan boshqarish',
+                'en': 'Manual Pallet Trucks',
+                'ru': 'Ручные паллетные тележки'
+            },
+            // Spare parts
+            'spare': {
+                'uz': 'Texnika extiyot qismlari',
+                'en': 'Machinery Spare Parts',
+                'ru': 'Запчасти для техники'
+            },
+            'spare parts': {
+                'uz': 'Texnika extiyot qismlari',
+                'en': 'Machinery Spare Parts',
+                'ru': 'Запчасти для техники'
+            },
+            'Texnika extiyot qismlarin': {
+                'uz': 'Texnika extiyot qismlari',
+                'en': 'Machinery Spare Parts',
+                'ru': 'Запчасти для техники'
+            }
+        }
+
+        return categoryMapping
+    }
+
+    // Key yoki nom bo'yicha to'g'ri kategoriya nomini topish
+    const getCorrectCategoryName = (key, originalName) => {
+        const mapping = getCategoryMapping()
+
+        // Avval key bo'yicha qidirish
+        if (mapping[key] && mapping[key][currentLang]) {
+            return mapping[key][currentLang]
+        }
+
+        // Agar key topilmasa, originalName bo'yicha qidirish
+        if (mapping[originalName] && mapping[originalName][currentLang]) {
+            return mapping[originalName][currentLang]
+        }
+
+        // Key va originalName ni kichik harfda qidirish
+        const lowerKey = key?.toLowerCase()
+        const lowerName = originalName?.toLowerCase()
+
+        for (const [mappingKey, translations] of Object.entries(mapping)) {
+            if (mappingKey.toLowerCase() === lowerKey ||
+                mappingKey.toLowerCase() === lowerName ||
+                mappingKey.toLowerCase().includes(lowerKey) ||
+                lowerKey?.includes(mappingKey.toLowerCase())) {
+                return translations[currentLang] || originalName
+            }
+        }
+
+        // Agar hech narsa topilmasa, originalName qaytarish
+        return originalName
+    }
+
+    // Static kategoriyalar ro'yxati
+    const getStaticCategories = () => {
+        const staticCategories = [
+            {
+                id: 101,
+                key: "diesel",
+                image: "/traktr.png"
+            },
+            {
+                id: 102,
+                key: "Electric",
+                image: "/orn.png"
+            },
+            {
+                id: 103,
+                key: "Petrol",
+                image: "/orn.png"
+            },
+            {
+                id: 104,
+                key: "lpg",
+                image: "/stacker.png"
+            },
+            {
+                id: 105,
+                key: "electric pallet",
+                image: "/pall.png"
+            },
+            {
+                id: 106,
+                key: "PALLET STACKER",
+                image: "/stacker.png"
+            },
+            {
+                id: 107,
+                key: "REACH TRUCK",
+                image: "/reach-truck.png"
+            },
+            {
+                id: 108,
+                key: "Handle Pallets",
+                image: "/handle-pallet.png"
+            },
+            {
+                id: 109,
+                key: "spare",
+                image: "/spare-parts.png"
+            }
+        ]
+
+        return staticCategories.map(cat => ({
+            ...cat,
+            name: getCorrectCategoryName(cat.key, cat.key)
+        }))
     }
 
     // Rasm yo'lini tekshirish va to'g'rilash funksiyasi
@@ -64,23 +268,16 @@ const Categories = () => {
             // API dan kelgan ma'lumotlarni to'g'ri handle qilish
             let itemsArray = []
 
-            console.log('API data structure:', {
-                hasResults: !!data.results,
-                isArray: Array.isArray(data),
-                resultsIsArray: Array.isArray(data.results),
-                keys: Object.keys(data)
-            })
-
             if (data.results && Array.isArray(data.results)) {
                 itemsArray = data.results
-                console.log('Using data.results, length:', itemsArray.length)
             } else if (Array.isArray(data)) {
                 itemsArray = data
-                console.log('Using data directly, length:', itemsArray.length)
             } else {
-                console.log('Unexpected API response format:', data)
-                console.log('Falling back to static categories')
-                itemsArray = []
+                console.log('Unexpected API response format, using static categories')
+                setCategories(getStaticCategories())
+                setError(null)
+                setLoading(false)
+                return
             }
 
             let formattedCategories = []
@@ -93,51 +290,40 @@ const Categories = () => {
                     const categoryKey = item.category || item.type || item.fuel_type || 'other'
                     const categoryName = item.category_name || item.type_name || item.fuel_type || categoryKey
 
-                    // DEBUG: Har bir item uchun ma'lumotlarni console ga chiqarish
                     console.log(`Item ${index}:`, {
                         categoryKey: categoryKey,
                         categoryName: categoryName,
-                        category: item.category,
-                        category_name: item.category_name,
-                        type: item.type,
-                        type_name: item.type_name,
-                        fuel_type: item.fuel_type,
                         lang: currentLang
                     })
 
-                    // "Elektr seriyasi" kategoriyasini bloklash (barcha tillarda va barcha variantlarda)
+                    // "Elektr seriyasi" kategoriyasini bloklash
                     const isElektrSeriyasi =
                         categoryName === "Elektr seriyasi" ||
                         categoryName === "Электр серияси" ||
-                        categoryName === "Электрическая серия" ||  // Yangi rus varianti
+                        categoryName === "Электрическая серия" ||
                         categoryName === "Electric series" ||
                         categoryKey === "elektr_seriyasi" ||
                         categoryKey === "electric_series" ||
-                        categoryKey === "Elektr seriyasi" ||
-                        categoryKey === "Электр серияси" ||
-                        categoryKey === "Электрическая серия" ||  // Yangi rus varianti
-                        categoryName.toLowerCase().includes("elektr seriyasi") ||
-                        categoryName.toLowerCase().includes("электр серияси") ||
-                        categoryName.toLowerCase().includes("электрическая серия") ||  // Yangi rus varianti
-                        categoryName.toLowerCase().includes("electric series") ||
-                        categoryKey.toLowerCase().includes("elektr_seriyasi") ||
-                        categoryKey.toLowerCase().includes("electric_series") ||
-                        categoryName.toLowerCase().includes("электрическая") ||  // Rus tilida "электрическая" so'zi
-                        (categoryName && categoryName.toString().toLowerCase().includes("электрическ"))
+                        categoryName?.toLowerCase().includes("elektr seriyasi") ||
+                        categoryName?.toLowerCase().includes("электр серияси") ||
+                        categoryName?.toLowerCase().includes("электрическая серия") ||
+                        categoryName?.toLowerCase().includes("electric series") ||
+                        categoryName?.toLowerCase().includes("электрическая") ||
+                        categoryName?.toLowerCase().includes("электрическ")
 
                     if (isElektrSeriyasi) {
-                        console.log('🚫 ELEKTR SERIYASI BLOKLANDI:', {
-                            categoryName: categoryName,
-                            categoryKey: categoryKey,
-                            item: item
-                        })
-                        return // Bu kategoriyani o'tkazib yuborish
+                        console.log('🚫 ELEKTR SERIYASI BLOKLANDI:', categoryName)
+                        return
                     }
 
                     if (!categoryMap.has(categoryKey)) {
+                        // To'g'ri nom olish
+                        const correctName = getCorrectCategoryName(categoryKey, categoryName)
+
                         categoryMap.set(categoryKey, {
                             id: categoryMap.size + 1,
-                            name: categoryName,
+                            name: correctName,
+                            originalName: categoryName,
                             image: getImagePath(item.image || item.photo),
                             key: categoryKey,
                             description: item.description || null,
@@ -146,7 +332,7 @@ const Categories = () => {
                     } else {
                         const existing = categoryMap.get(categoryKey)
                         existing.count += 1
-                        // Agar yangi itemda rasm bor va eskisida yo'q bo'lsa, yangilansin
+                        // Rasm yangilash
                         if (!existing.image && (item.image || item.photo)) {
                             existing.image = getImagePath(item.image || item.photo)
                         }
@@ -154,207 +340,31 @@ const Categories = () => {
                 })
 
                 formattedCategories = Array.from(categoryMap.values())
-                console.log('Generated categories from API (after filtering):', formattedCategories)
+                console.log('Generated categories from API:', formattedCategories)
             }
 
-            // Agar API dan kategoriyalar kam kelsa yoki yo'q bo'lsa, fallback kategoriyalarni qo'shish
+            // Agar API dan kam kategoriya kelsa, static kategoriyalarni qo'shish
             if (formattedCategories.length < 3) {
-                console.log('Not enough categories from API, adding fallbacks')
-                const fallbackCategories = [
-                    {
-                        id: 101,
-                        name: "Dizelli transportlar",
-                        image: "/traktr.png",
-                        key: "diesel"
-                    },
-                    {
-                        id: 102,
-                        name: "Elektrik transportlar",
-                        image: "/orn.png",
-                        key: "Electric"
-                    },
-                    {
-                        id: 103,
-                        name: "Benzinli transportlar",
-                        image: "/orn.png",
-                        key: "Petrol"
-                    },
-                    {
-                        id: 104,
-                        name: "LPG transportlari",
-                        image: "/stacker.png",
-                        key: "lpg"
-                    },
-                    {
-                        id: 105,
-                        name: "Elektr pallet yuk mashinasi",
-                        image: "/pall.png",
-                        key: "electric pallet"
-                    },
-                    {
-                        id: 106,
-                        name: "Elektr stacker mashinaslari",
-                        image: "/stacker.png",
-                        key: "PALLET STACKER"
-                    },
-                    {
-                        id: 107,
-                        name: "Reach truck forklift",
-                        image: "/reach-truck.png",
-                        key: "REACH TRUCK"
-                    },
-                    {
-                        id: 108,
-                        name: "Handle pallet forklift",
-                        image: "/handle-pallet.png",
-                        key: "Handle Pallets"
-                    },
-                    {
-                        id: 109,
-                        name: "Texnika extiyot qismlari",
-                        image: "/spare-parts.png",
-                        key: "spare"
-                    }
-                ]
-
-                // Mavjud kategoriyalar kalitlarini olish
+                console.log('Not enough categories from API, adding static categories')
+                const staticCategories = getStaticCategories()
                 const existingKeys = formattedCategories.map(cat => cat.key)
 
-                // Fallback kategoriyalardan faqat mavjud bo'lmaganlarini qo'shish
-                fallbackCategories.forEach(fallbackCat => {
-                    // "Elektr seriyasi" kategoriyasini qo'shmaslik (barcha tillarda)
-                    if (fallbackCat.name === "Elektr seriyasi" ||
-                        fallbackCat.name === "Электр серияси" ||
-                        fallbackCat.name === "Электрическая серия" ||  // Yangi rus varianti
-                        fallbackCat.name === "Electric series" ||
-                        fallbackCat.key === "elektr_seriyasi" ||
-                        fallbackCat.key === "electric_series" ||
-                        fallbackCat.name.toLowerCase().includes("elektr seriyasi") ||
-                        fallbackCat.name.toLowerCase().includes("электр серияси") ||
-                        fallbackCat.name.toLowerCase().includes("электрическая серия") ||  // Yangi rus varianti
-                        fallbackCat.name.toLowerCase().includes("electric series") ||
-                        fallbackCat.name.toLowerCase().includes("электрическая") ||  // Rus tilida "электрическая" so'zi
-                        fallbackCat.name.toLowerCase().includes("электрическ")) {
-                        console.log('Fallback dan Elektr seriyasi bloklandı (barcha tillar + yangi rus varianti):', fallbackCat.name)
-                        return
-                    }
-
-                    if (!existingKeys.includes(fallbackCat.key)) {
-                        formattedCategories.push(fallbackCat)
+                staticCategories.forEach(staticCat => {
+                    if (!existingKeys.includes(staticCat.key)) {
+                        formattedCategories.push(staticCat)
                     }
                 })
             }
 
             console.log('Final categories:', formattedCategories)
-
-            // "Elektr seriyasi" kategoriyasini oxirgi tekshirish va olib tashlash (barcha tillarda)
-            const finalFilteredCategories = formattedCategories.filter(cat => {
-                if (cat.name === "Elektr seriyasi" ||
-                    cat.name === "Электр серияси" ||
-                    cat.name === "Электрическая серия" ||  // Yangi rus varianti
-                    cat.name === "Electric series" ||
-                    cat.key === "elektr_seriyasi" ||
-                    cat.key === "electric_series" ||
-                    cat.name.toLowerCase().includes("elektr seriyasi") ||
-                    cat.name.toLowerCase().includes("электр серияси") ||
-                    cat.name.toLowerCase().includes("электрическая серия") ||  // Yangi rus varianti
-                    cat.name.toLowerCase().includes("electric series") ||
-                    cat.key.toLowerCase().includes("elektr_seriyasi") ||
-                    cat.key.toLowerCase().includes("electric_series") ||
-                    cat.name.toLowerCase().includes("электрическая") ||  // Rus tilida "электрическая" so'zi
-                    cat.name.toLowerCase().includes("электрическ")) {
-                    console.log('Final filterlashda Elektr seriyasi olib tashlandi (barcha tillar + yangi rus varianti):', cat.name)
-                    return false
-                }
-                return true
-            })
-
-            console.log('Final filtered categories:', finalFilteredCategories)
-            setCategories(finalFilteredCategories)
+            setCategories(formattedCategories)
             setError(null)
         } catch (error) {
             console.error('Ma\'lumotlarni yuklashda xato:', error)
             setError(error.message)
 
-            // Fallback kategoriyalar - "Elektr seriyasi" olib tashlangan
-            const fallbackCategories = [
-                {
-                    id: 1,
-                    name: "Dizelli transportlar",
-                    image: "/traktr.png",
-                    key: "diesel"
-                },
-                {
-                    id: 2,
-                    name: "Elektrik transportlar",
-                    image: "/electric-forklift.png",
-                    key: "Electric"
-                },
-                {
-                    id: 3,
-                    name: "Benzinli transportlar",
-                    image: "/orn.png",
-                    key: "Petrol"
-                },
-                {
-                    id: 4,
-                    name: "LPG transportlari",
-                    image: "/lpg-forklift.png",
-                    key: "lpg"
-                },
-                {
-                    id: 5,
-                    name: "Elektr pallet yuk mashinasi",
-                    image: "/pall.png",
-                    key: "electric pallet"
-                },
-                {
-                    id: 6,
-                    name: "Elektr stacker mashinaslari",
-                    image: "/stacker.png",
-                    key: "PALLET STACKER"
-                },
-                {
-                    id: 7,
-                    name: "Reach truck forklift",
-                    image: "/reach-truck.png",
-                    key: "REACH TRUCK"
-                },
-                {
-                    id: 8,
-                    name: "Handle pallet forklift",
-                    image: "/handle-pallet.png",
-                    key: "Handle Pallets"
-                },
-                {
-                    id: 9,
-                    name: "Texnika extiyot qismlari",
-                    image: "/spare-parts.png",
-                    key: "spare"
-                }
-            ]
-
-            // Har bir kategoriyani tekshirish va "Elektr seriyasi"ni olib tashlash (barcha tillarda)
-            const filteredCategories = fallbackCategories.filter(cat => {
-                if (cat.name === "Elektr seriyasi" ||
-                    cat.name === "Электр серияси" ||
-                    cat.name === "Электрическая серия" ||  // Yangi rus varianti
-                    cat.name === "Electric series" ||
-                    cat.key === "elektr_seriyasi" ||
-                    cat.key === "electric_series" ||
-                    cat.name.toLowerCase().includes("elektr seriyasi") ||
-                    cat.name.toLowerCase().includes("электр серияси") ||
-                    cat.name.toLowerCase().includes("электрическая серия") ||  // Yangi rus varianti
-                    cat.name.toLowerCase().includes("electric series") ||
-                    cat.name.toLowerCase().includes("электрическая") ||  // Rus tilida "электрическая" so'zi
-                    cat.name.toLowerCase().includes("электрическ")) {
-                    console.log('Fallback kategoriyasidan Elektr seriyasi olib tashlandi (barcha tillar + yangi rus varianti):', cat.name)
-                    return false
-                }
-                return true
-            })
-
-            setCategories(filteredCategories)
+            // Fallback - Static kategoriyalar
+            setCategories(getStaticCategories())
         } finally {
             setLoading(false)
         }
@@ -430,13 +440,13 @@ const Categories = () => {
                         </div>
                     )}
 
-                    {/* Debug ma'lumotlari - development da ko'rish uchun */}
+                    {/* Debug ma'lumotlari */}
                     <div className="mt-2 text-sm text-gray-500">
                         {t('home')}: {currentLang} | {t('categories')}: {categories.length}
                     </div>
                 </div>
 
-                {/* Categories Grid - Mobile: flex column, Desktop: grid */}
+                {/* Categories Grid */}
                 <div className="flex flex-col space-y-6 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 lg:gap-8 xl:gap-10 md:space-y-0">
                     {categories.map((category) => (
                         <Link
@@ -444,9 +454,7 @@ const Categories = () => {
                             href={`/cattegoryDatail/${category.id}`}
                             onClick={() => handleCategoryClick(category)}
                             className="bg-white rounded-xl md:rounded-xl lg:rounded-2xl shadow-sm hover:shadow-lg md:hover:shadow-2xl md:hover:shadow-orange-500/20 transition-all duration-300 md:duration-500 cursor-pointer border border-gray-100 hover:border-orange-200 md:transform md:hover:-translate-y-1 lg:hover:-translate-y-2 md:hover:scale-102 lg:hover:scale-105 group
-                            /* Mobile: horizontal layout */
                             flex flex-row items-center p-5 min-h-[120px]
-                            /* Desktop: vertical layout */
                             md:flex-col md:items-stretch md:p-0 md:min-h-0 block"
                             style={{
                                 userSelect: 'none',
@@ -456,7 +464,7 @@ const Categories = () => {
                             {/* Mobile Layout */}
                             <div className="flex-1 pr-6 md:hidden flex flex-col justify-between h-full">
                                 <h3 className="text-xl font-bold text-black leading-tight group-hover:text-orange-600 transition-colors duration-300 mb-4">
-                                    {getTranslatedCategoryName(category.name)}
+                                    {category.name}
                                 </h3>
                                 <img
                                     src="/jac.png"
@@ -470,10 +478,9 @@ const Categories = () => {
                                 {category.image && (
                                     <img
                                         src={category.image}
-                                        alt={getTranslatedCategoryName(category.name)}
+                                        alt={category.name}
                                         className="max-w-full max-h-full object-contain"
                                         onError={(e) => handleImageError(e, category)}
-                                        onLoad={() => console.log(`Image loaded successfully: ${category.image}`)}
                                     />
                                 )}
 
@@ -487,7 +494,6 @@ const Categories = () => {
                                         fill="currentColor"
                                         viewBox="0 0 200 150"
                                     >
-                                        {/* Electric forklift icon with battery indicator */}
                                         <rect x="10" y="80" width="80" height="40" rx="5" fill="#10B981" />
                                         <rect x="90" y="70" width="30" height="50" rx="3" fill="#10B981" />
                                         <rect x="40" y="50" width="35" height="30" rx="3" fill="#333" opacity="0.8" />
@@ -495,13 +501,9 @@ const Categories = () => {
                                         <rect x="125" y="25" width="6" height="70" fill="#666" />
                                         <rect x="130" y="45" width="40" height="4" fill="#666" />
                                         <rect x="130" y="55" width="40" height="4" fill="#666" />
-
-                                        {/* Electric indicator - battery symbol */}
                                         <rect x="15" y="85" width="20" height="12" rx="2" fill="#FFF" opacity="0.9" />
                                         <rect x="17" y="87" width="16" height="8" rx="1" fill="#10B981" />
                                         <rect x="35" y="89" width="2" height="4" fill="#FFF" />
-
-                                        {/* Wheels */}
                                         <circle cx="25" cy="125" r="12" fill="#333" />
                                         <circle cx="65" cy="125" r="12" fill="#333" />
                                         <circle cx="105" cy="125" r="8" fill="#333" />
@@ -512,13 +514,13 @@ const Categories = () => {
                                 </div>
                             </div>
 
-                            {/* Desktop Layout - Hidden on mobile */}
+                            {/* Desktop Layout */}
                             <>
                                 {/* Category Header - Desktop */}
                                 <div className="hidden md:block p-5 sm:p-6 pb-3">
                                     <div className="flex items-start justify-between mb-4">
                                         <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-black leading-tight max-w-[200px] sm:max-w-[250px] group-hover:text-orange-600 transition-colors duration-300">
-                                            {getTranslatedCategoryName(category.name)}
+                                            {category.name}
                                         </h3>
                                         <div className="flex-shrink-0 ml-4 sm:ml-6">
                                             <img
@@ -536,10 +538,9 @@ const Categories = () => {
                                         {category.image && (
                                             <img
                                                 src={category.image}
-                                                alt={getTranslatedCategoryName(category.name)}
+                                                alt={category.name}
                                                 className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105 sm:group-hover:scale-110"
                                                 onError={(e) => handleImageError(e, category)}
-                                                onLoad={() => console.log(`Desktop image loaded: ${category.image}`)}
                                             />
                                         )}
 
@@ -554,7 +555,6 @@ const Categories = () => {
                                                     fill="currentColor"
                                                     viewBox="0 0 200 150"
                                                 >
-                                                    {/* Dynamic color based on category */}
                                                     <rect x="10" y="80" width="80" height="40" rx="5"
                                                         fill={category.key === 'Electric' ? '#10B981' : '#FF6B35'} />
                                                     <rect x="90" y="70" width="30" height="50" rx="3"
@@ -565,7 +565,6 @@ const Categories = () => {
                                                     <rect x="130" y="45" width="40" height="4" fill="#666" />
                                                     <rect x="130" y="55" width="40" height="4" fill="#666" />
 
-                                                    {/* Electric indicator for electric categories */}
                                                     {category.key === 'Electric' && (
                                                         <>
                                                             <rect x="15" y="85" width="20" height="12" rx="2" fill="#FFF" opacity="0.9" />
