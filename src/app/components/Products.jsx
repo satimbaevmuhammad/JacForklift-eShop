@@ -15,11 +15,12 @@ const Products = () => {
   const [error, setError] = useState(null);
   const [currentLang, setCurrentLang] = useState(i18n.language);
 
-  // Load more states
+  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [allProducts, setAllProducts] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [loadingPage, setLoadingPage] = useState(false);
+  const itemsPerPage = 8; // Items per page
 
   // Listen to language changes
   useEffect(() => {
@@ -35,22 +36,23 @@ const Products = () => {
   }, []);
 
   useEffect(() => {
-    fetchInitialData();
-  }, [currentLang]); // Refetch when language changes
+    fetchProducts(1);
+  }, [currentLang, selectedCategory]); // Refetch when language or category changes
 
-  useEffect(() => {
-    filterProducts();
-  }, [allProducts, selectedCategory]);
-
-  const fetchInitialData = async () => {
+  const fetchProducts = async (page = 1) => {
     try {
-      setLoading(true);
+      setLoadingPage(page !== 1);
+      if (page === 1) setLoading(true);
       setError(null);
 
-      // API request with language parameter
-      const productsResponse = await fetch(
-        `https://api.jacforklift.uz/api/api/forklifts/?page=1&page_size=8&lang=${currentLang}`
-      );
+      // Build API URL with filters
+      let apiUrl = `https://api.jacforklift.uz/api/api/forklifts/?page=${page}&page_size=${itemsPerPage}&lang=${currentLang}`;
+      
+      if (selectedCategory !== "all") {
+        apiUrl += `&forklift_type=${selectedCategory}`;
+      }
+
+      const productsResponse = await fetch(apiUrl);
 
       if (!productsResponse.ok) {
         throw new Error(`HTTP error! status: ${productsResponse.status}`);
@@ -60,19 +62,37 @@ const Products = () => {
       console.log("API Response:", productsData);
 
       const forklifts = productsData.results || [];
-      setAllProducts(forklifts);
       setProducts(forklifts);
+      setFilteredProducts(forklifts);
 
-      // Check if there are more items
-      setHasMore(productsData.next !== null);
+      // Calculate pagination info
+      setTotalProducts(productsData.count || 0);
+      setTotalPages(Math.ceil((productsData.count || 0) / itemsPerPage));
+      setCurrentPage(page);
 
-      if (!forklifts.length) {
+      if (!forklifts.length && page === 1) {
         console.warn("No forklifts found in API response");
       }
 
-      // Fetch all products for categories with language parameter
+      // Fetch categories only on initial load
+      if (page === 1 && categories.length === 0) {
+        await fetchCategories();
+      }
+
+      setLoading(false);
+      setLoadingPage(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setError(t('error') || "Ma'lumotlarni yuklashda xato yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.");
+      setLoading(false);
+      setLoadingPage(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
       const allProductsResponse = await fetch(
-        `https://api.jacforklift.uz/api/api/forklifts/?page_size=8&lang=${currentLang}`
+        `https://api.jacforklift.uz/api/api/forklifts/?page_size=1000&lang=${currentLang}`
       );
 
       if (allProductsResponse.ok) {
@@ -85,70 +105,86 @@ const Products = () => {
         const categoriesData = uniqueTypes.map((type, index) => ({
           id: index + 1,
           name: type.charAt(0).toUpperCase() + type.slice(1),
+          value: type,
         }));
         setCategories(categoriesData);
       }
-
-      setCurrentPage(1); // Reset page when language changes
-      setLoading(false);
     } catch (error) {
-      console.error("Error fetching data:", error);
-      setError(t('error') || "Ma'lumotlarni yuklashda xato yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.");
-      setLoading(false);
+      console.error("Error fetching categories:", error);
     }
-  };
-
-  const loadMoreProducts = async () => {
-    if (loadingMore || !hasMore) return;
-
-    try {
-      setLoadingMore(true);
-      const nextPage = currentPage + 1;
-
-      // API request with language parameter
-      const productsResponse = await fetch(
-        `https://api.jacforklift.uz/api/api/forklifts/?page=${nextPage}&page_size=8&lang=${currentLang}`
-      );
-
-      if (!productsResponse.ok) {
-        throw new Error(`HTTP error! status: ${productsResponse.status}`);
-      }
-
-      const productsData = await productsResponse.json();
-      const newForklifts = productsData.results || [];
-
-      if (newForklifts.length > 0) {
-        setAllProducts(prev => [...prev, ...newForklifts]);
-        setCurrentPage(nextPage);
-        setHasMore(productsData.next !== null);
-      } else {
-        setHasMore(false);
-      }
-
-      setLoadingMore(false);
-    } catch (error) {
-      console.error("Error loading more products:", error);
-      setLoadingMore(false);
-    }
-  };
-
-  const filterProducts = () => {
-    let filtered = [...allProducts];
-
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter(
-        (product) =>
-          product.forklift_type &&
-          product.forklift_type.toLowerCase() === selectedCategory.toLowerCase()
-      );
-    }
-
-    console.log("Filtered Products:", filtered);
-    setFilteredProducts(filtered);
   };
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
+    setCurrentPage(1);
+  };
+
+const handlePageChange = (page) => {
+  if (page >= 1 && page <= totalPages && page !== currentPage) {
+    // Products bo'limiga scroll qilish
+    const productsElement = document.getElementById('products');
+    if (productsElement) {
+      // Agar fixed header bo'lsa, uning balandligini hisobga olish
+      const headerHeight = document.querySelector('header')?.offsetHeight || 60;
+      const elementPosition = productsElement.offsetTop;
+      const offsetPosition = elementPosition - headerHeight - 20; // 20px qo'shimcha bo'shliq
+      
+      window.scrollTo({
+        top: Math.max(0, offsetPosition), // Manfiy qiymat bo'lmasligi uchun
+        behavior: 'smooth'
+      });
+    } else {
+      // Agar products elementi topilmasa, sahifa yuqorisiga scroll qilish
+      window.scrollTo({
+        top: 200, // Sahifa yuqorisidan 200px pastga
+        behavior: 'smooth'
+      });
+    }
+    
+    // Yangi ma'lumotlarni yuklash
+    fetchProducts(page);
+  }
+};
+
+  // Generate page numbers for pagination
+  const generatePageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 7;
+    
+    if (totalPages <= maxVisiblePages) {
+      // Show all pages if total pages is small
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Complex pagination logic
+      if (currentPage <= 4) {
+        // Show first pages
+        for (let i = 1; i <= 5; i++) {
+          pages.push(i);
+        }
+        pages.push('...');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 3) {
+        // Show last pages
+        pages.push(1);
+        pages.push('...');
+        for (let i = totalPages - 4; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        // Show middle pages
+        pages.push(1);
+        pages.push('...');
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pages.push(i);
+        }
+        pages.push('...');
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
   };
 
   const getCategoryName = (forkliftType) => {
@@ -218,7 +254,7 @@ const Products = () => {
         <div className="text-center bg-white p-4 sm:p-8 rounded-lg shadow-lg w-full max-w-md">
           <h3 className="text-lg sm:text-xl font-semibold text-red-600 mb-4">{error}</h3>
           <button
-            onClick={fetchInitialData}
+            onClick={() => fetchProducts(1)}
             className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
           >
             {t('retry') || 'Qayta urinish'}
@@ -233,36 +269,40 @@ const Products = () => {
       {/* Header - Mobile Optimized */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl sm:text-4xl font-black text-gray-900">
               {t('products') || 'Mahsulotlar'}
             </h1>
-            <button
-              onClick={() => handleCategoryChange("all")}
-              className="bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-colors border-2 border-orange-400 hover:border-orange-500 text-sm sm:text-base"
-            >
-              {t('seeAllResults') || 'Barchasi'} →
-            </button>
+            <div className="text-sm text-gray-600">
+              {totalProducts > 0 && (
+                <span>
+                  {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalProducts)} {t('of') || 'dan'} {totalProducts}
+                </span>
+              )}
+            </div>
           </div>
+          
           {/* Category Filter */}
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <button
               onClick={() => handleCategoryChange("all")}
-              className={`px-4 py-2 rounded-lg text-sm sm:text-base ${selectedCategory === "all"
-                ? "bg-orange-500 text-white"
-                : "bg-white text-gray-700 border-2 border-orange-400 hover:border-orange-500"
-                }`}
+              className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-colors text-sm sm:text-base ${
+                selectedCategory === "all"
+                  ? "bg-orange-500 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
             >
-              {t('seeAllResults') || 'Hammasi'}
+              {t('all') || 'Barchasi'}
             </button>
             {categories.map((category) => (
               <button
                 key={category.id}
-                onClick={() => handleCategoryChange(category.name.toLowerCase())}
-                className={`px-4 py-2 rounded-lg text-sm sm:text-base ${selectedCategory === category.name.toLowerCase()
-                  ? "bg-orange-500 text-white"
-                  : "bg-white text-gray-700 border-2 border-orange-400 hover:border-orange-500"
-                  }`}
+                onClick={() => handleCategoryChange(category.value)}
+                className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-colors text-sm sm:text-base ${
+                  selectedCategory === category.value
+                    ? "bg-orange-500 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
               >
                 {getCategoryName(category.name)}
               </button>
@@ -274,6 +314,16 @@ const Products = () => {
       {/* Main Content */}
       <main className="py-4 sm:py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          {/* Loading overlay for page changes */}
+          {loadingPage && (
+            <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-3">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500"></div>
+                <span className="text-gray-700">{t('loading') || 'Yuklanmoqda...'}</span>
+              </div>
+            </div>
+          )}
+
           {/* Products Grid - Mobile Responsive */}
           {filteredProducts.length > 0 ? (
             <>
@@ -331,23 +381,60 @@ const Products = () => {
                 ))}
               </div>
 
-              {/* Load More Button */}
-              {hasMore && selectedCategory === "all" && (
-                <div className="flex justify-center mt-8">
-                  <button
-                    onClick={loadMoreProducts}
-                    disabled={loadingMore}
-                    className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loadingMore ? (
-                      <div className="flex items-center space-x-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
-                        <span>{t('loading') || 'Yuklanmoqda...'}</span>
-                      </div>
-                    ) : (
-                      t('moreResults') || "Показать ещё 10"
-                    )}
-                  </button>
+              {/* Advanced Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center mt-8 sm:mt-12">
+                  <div className="flex items-center space-x-1 bg-white rounded-lg shadow-sm border px-2 py-2">
+                    {/* Previous Button */}
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      ←
+                    </button>
+
+                    {/* Page Numbers */}
+                    {generatePageNumbers().map((page, index) => (
+                      <React.Fragment key={index}>
+                        {page === '...' ? (
+                          <span className="px-3 py-2 text-sm text-gray-500">...</span>
+                        ) : (
+                          <button
+                            onClick={() => handlePageChange(page)}
+                            className={`px-3 py-2 text-sm font-medium transition-colors ${
+                              currentPage === page
+                                ? "bg-orange-500 text-white border border-orange-500"
+                                : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        )}
+                      </React.Fragment>
+                    ))}
+
+                    {/* Next Button */}
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      →
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Pagination Info */}
+              {totalPages > 1 && (
+                <div className="text-center mt-4 text-sm text-gray-600">
+                  {t('page') || 'Sahifa'} {currentPage} {t('of') || 'dan'} {totalPages} 
+                  {totalProducts > 0 && (
+                    <span className="ml-2">
+                      ({totalProducts} {t('total') || 'jami'} {t('products') || 'mahsulot'})
+                    </span>
+                  )}
                 </div>
               )}
             </>

@@ -388,9 +388,7 @@ const CategoryDetailPage = () => {
                             {t(categoryInfo?.name) || categoryInfo?.name}
                         </h1>
                     </div>
-                    <p className="text-gray-600 ml-14">
-                        {t('products')}: {products.length}
-                    </p>
+                  
 
                     {error && (
                         <div className="ml-14 mt-2 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded-lg">
