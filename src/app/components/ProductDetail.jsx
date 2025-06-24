@@ -14,10 +14,12 @@ import {
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import i18n from "../../../lib/i18n";
+import { useTranslation } from "react-i18next";
 
 const ProductDetailPage = () => {
   const params = useParams();
   const router = useRouter();
+  const { t } = useTranslation();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,11 +35,23 @@ const ProductDetailPage = () => {
   const [submitError, setSubmitError] = useState("");
   const [currentLang, setCurrentLang] = useState("uz");
 
-  // Initialize language properly
+  // Initialize language properly va til o'zgarishini tinglash
   useEffect(() => {
     if (i18n && i18n.language) {
       setCurrentLang(i18n.language);
     }
+
+    // Til o'zgarishini tinglash
+    const handleLanguageChange = (lng) => {
+      console.log("Til o'zgartirildi:", lng);
+      setCurrentLang(lng);
+    };
+
+    i18n.on('languageChanged', handleLanguageChange);
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -52,7 +66,7 @@ const ProductDetailPage = () => {
       setLoading(true);
       setError(null);
 
-      console.log("Fetching product with ID:", params.id);
+      console.log("Fetching product with ID:", params.id, "Language:", currentLang);
 
       const response = await fetch(
         `https://api.jacforklift.uz/api/api/forklifts/${params.id}/?lang=${currentLang}`,
@@ -70,7 +84,7 @@ const ProductDetailPage = () => {
       if (!response.ok) {
         if (response.status === 404) {
           console.error("Mahsulot topilmadi (404)");
-          setError("Mahsulot topilmadi");
+          setError(t('product_not_found') || "Mahsulot topilmadi");
           setProduct(null);
           return;
         }
@@ -87,7 +101,7 @@ const ProductDetailPage = () => {
       setProduct(productData);
     } catch (error) {
       console.error("Mahsulot ma'lumotlarini yuklashda xato:", error);
-      setError("Mahsulot ma'lumotlarini yuklashda xato yuz berdi");
+      setError(t('message_send_error') || "Mahsulot ma'lumotlarini yuklashda xato yuz berdi");
       setProduct(null);
     } finally {
       setLoading(false);
@@ -173,19 +187,19 @@ const ProductDetailPage = () => {
     return stockValue === 1 || stockValue === true;
   };
 
-  // Generate features from product data
+  // Generate features from product data - til bilan
   const generateFeatures = (product) => {
     const features = [];
     if (product?.capacity_kg)
-      features.push(`${product.capacity_kg / 1000} ton ko'tarish qobiliyati`);
+      features.push(`${product.capacity_kg / 1000} ${t('ton_capacity') || 'ton ko\'tarish qobiliyati'}`);
     if (product?.forklift_type === "diesel")
-      features.push("Ekonomik yoqilg'i sarfi");
+      features.push(t('economic_fuel') || "Ekonomik yoqilg'i sarfi");
     if (product?.forklift_type === "electric")
-      features.push("Ekologik toza ishlash");
-    features.push("Ergonomik boshqaruv paneli");
-    features.push("Xavfsizlik tizimi");
-    features.push("Oson texnik xizmat ko'rsatish");
-    if (product?.engine_type) features.push(`${product.engine_type} dvigatel`);
+      features.push(t('eco_clean') || "Ekologik toza ishlash");
+    features.push(t('ergonomic_panel') || "Ergonomik boshqaruv paneli");
+    features.push(t('safety_system') || "Xavfsizlik tizimi");
+    features.push(t('easy_maintenance') || "Oson texnik xizmat ko'rsatish");
+    if (product?.engine_type) features.push(`${product.engine_type} ${t('diesel_engine') || 'dvigatel'}`);
     return features.slice(0, 6); // Maksimum 6 ta feature
   };
 
@@ -271,13 +285,13 @@ const ProductDetailPage = () => {
       phoneNumber.trim() === "+998" ||
       phoneNumber.trim() === "+998 "
     ) {
-      setSubmitError("Telefon raqamini to'liq kiriting");
+      setSubmitError(t('enter_full_phone') || "Telefon raqamini to'liq kiriting");
       return;
     }
 
     const cleaned = phoneNumber.replace(/\D/g, "");
     if (cleaned.length < 12) {
-      setSubmitError("Telefon raqam to'liq emas");
+      setSubmitError(t('phone_incomplete') || "Telefon raqam to'liq emas");
       return;
     }
 
@@ -322,7 +336,7 @@ const ProductDetailPage = () => {
           setSubmitError("");
         }, 3000);
       } else {
-        let errorMessage = "Xabar yuborishda xatolik yuz berdi";
+        let errorMessage = t('message_send_error') || "Xabar yuborishda xatolik yuz berdi";
         try {
           const errorData = await response.json();
           console.log("Server xatosi:", errorData);
@@ -335,7 +349,7 @@ const ProductDetailPage = () => {
       }
     } catch (error) {
       console.error("Network xatosi:", error);
-      setSubmitError("Internet aloqasida xatolik. Qaytadan urinib ko'ring.");
+      setSubmitError(t('network_error') || "Internet aloqasida xatolik. Qaytadan urinib ko'ring.");
     } finally {
       setIsSubmitting(false);
     }
@@ -379,23 +393,23 @@ const ProductDetailPage = () => {
           <div className="text-center max-w-md mx-auto px-4">
             <div className="text-6xl mb-4">😔</div>
             <h2 className="text-2xl font-bold text-gray-700 mb-4">
-              {error || "Mahsulot topilmadi"}
+              {error || t('product_not_found') || "Mahsulot topilmadi"}
             </h2>
             <p className="text-gray-500 mb-6">
-              Ushbu mahsulot mavjud emas yoki o'chirilgan bo'lishi mumkin
+              {t('product_not_available') || "Ushbu mahsulot mavjud emas yoki o'chirilgan bo'lishi mumkin"}
             </p>
             <div className="space-y-3">
               <Link
                 href="/products"
                 className="block bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
-                Barcha mahsulotlarga qaytish
+                {t('return_to_products') || "Barcha mahsulotlarga qaytish"}
               </Link>
               <button
                 onClick={() => router.back()}
                 className="block w-full bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors"
               >
-                Orqaga qaytish
+                {t('go_back') || "Orqaga qaytish"}
               </button>
             </div>
           </div>
@@ -429,12 +443,10 @@ const ProductDetailPage = () => {
             <div className="px-6 py-8">
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  Sotib olish uchun telefon raqamingizni qoldiring!
+                  {t('enter_phone') || "Sotib olish uchun telefon raqamingizni qoldiring!"}
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  Telefon raqamingizni yuboring.
-                  <br />
-                  Biz siz bilan tez orada bog'lanamiz
+                  {t('contact_message') || "Telefon raqamingizni yuboring. Biz siz bilan tez orada bog'lanamiz"}
                 </p>
               </div>
 
@@ -444,20 +456,20 @@ const ProductDetailPage = () => {
                     ✓
                   </div>
                   <h4 className="text-xl font-semibold text-gray-900 mb-3">
-                    Muvaffaqiyatli yuborildi!
+                    {t('successfully_sent') || "Muvaffaqiyatli yuborildi!"}
                   </h4>
                   <p className="text-gray-600">
-                    Tez orada siz bilan bog'lanamiz
+                    {t('will_contact_soon') || "Tez orada siz bilan bog'lanamiz"}
                   </p>
                   <div className="mt-4 text-sm text-gray-500">
-                    Bu oyna 3 soniyadan keyin yopiladi...
+                    {t('window_closes') || "Bu oyna 3 soniyadan keyin yopiladi..."}
                   </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmitPurchase} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Telefon raqam
+                      {t('phone_number') || "Telefon raqam"}
                     </label>
                     <input
                       type="tel"
@@ -489,10 +501,10 @@ const ProductDetailPage = () => {
                       {isSubmitting ? (
                         <div className="flex items-center justify-center">
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Yuborilmoqda...
+                          {t('submitting') || "Yuborilmoqda..."}
                         </div>
                       ) : (
-                        "Sotib olish"
+                        t('purchase') || "Sotib olish"
                       )}
                     </button>
                   </div>
@@ -513,7 +525,7 @@ const ProductDetailPage = () => {
               className="flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200 mb-2"
             >
               <ChevronLeft className="w-5 h-5 mr-1" />
-              Orqaga
+              {t('back') || "Orqaga"}
             </button>
           </div>
         </div>
@@ -544,11 +556,10 @@ const ProductDetailPage = () => {
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                    selectedImage === index
-                      ? "border-orange-500 ring-2 ring-orange-200"
-                      : "border-gray-200 hover:border-orange-300"
-                  }`}
+                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${selectedImage === index
+                    ? "border-orange-500 ring-2 ring-orange-200"
+                    : "border-gray-200 hover:border-orange-300"
+                    }`}
                 >
                   <img
                     src={
@@ -595,7 +606,7 @@ const ProductDetailPage = () => {
 
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  Xususiyatlar
+                  {t('features') || "Xususiyatlar"}
                 </h3>
                 <ul className="space-y-2">
                   {productFeatures.map((feature, index) => (
@@ -623,26 +634,24 @@ const ProductDetailPage = () => {
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center space-x-2 mb-3">
                   <div
-                    className={`w-3 h-3 rounded-full ${
-                      isInStock(product.in_stock)
-                        ? "bg-green-500"
-                        : "bg-green-500"
-                    }`}
+                    className={`w-3 h-3 rounded-full ${isInStock(product.in_stock)
+                      ? "bg-green-500"
+                      : "bg-green-500"
+                      }`}
                   ></div>
                   <span
-                    className={`text-sm font-medium ${
-                      isInStock(product.in_stock)
-                        ? "text-green-600"
-                        : "text-green-600"
-                    }`}
+                    className={`text-sm font-medium ${isInStock(product.in_stock)
+                      ? "text-green-600"
+                      : "text-green-600"
+                      }`}
                   >
-                    {isInStock(product.in_stock) ? "Mavjud" : "Mavjud"}
+                    {t('available') || "Mavjud"}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="text-lg font-medium text-gray-600">
-                    Mavjud
+                    {t('available') || "Mavjud"}
                   </div>
 
                   <button
@@ -651,7 +660,7 @@ const ProductDetailPage = () => {
                     className="bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
                   >
                     <ShoppingCart className="w-4 h-4" />
-                    <span>Sotib olish</span>
+                    <span>{t('purchase') || "Sotib olish"}</span>
                   </button>
                 </div>
               </div>
@@ -682,11 +691,10 @@ const ProductDetailPage = () => {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                      selectedImage === index
-                        ? "border-orange-500 ring-2 ring-orange-200"
-                        : "border-gray-200 hover:border-orange-300"
-                    }`}
+                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${selectedImage === index
+                      ? "border-orange-500 ring-2 ring-orange-200"
+                      : "border-gray-200 hover:border-orange-300"
+                      }`}
                   >
                     <img
                       src={
@@ -737,7 +745,7 @@ const ProductDetailPage = () => {
 
               <div className="mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Xususiyatlar
+                  {t('features') || "Xususiyatlar"}
                 </h3>
                 <ul className="space-y-3">
                   {productFeatures.map((feature, index) => (
@@ -761,13 +769,13 @@ const ProductDetailPage = () => {
 
               <div className="bg-gray-50 rounded-xl p-6 mb-6">
                 <h3 className="font-semibold text-gray-900 mb-4">
-                  Texnik xususiyatlari
+                  {t('technical_specifications') || "Texnik xususiyatlari"}
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                   {product.capacity_kg && (
                     <div className="flex gap-4">
                       <span className="text-gray-600">
-                        Ko'tarish qobiliyati:
+                        {t('lifting_capacity') || "Ko'tarish qobiliyati:"}
                       </span>
                       <span className="font-medium text-black">
                         {product.capacity_kg / 1000} ton
@@ -776,7 +784,7 @@ const ProductDetailPage = () => {
                   )}
                   {product.model_number && (
                     <div className="flex gap-4">
-                      <span className="text-gray-600">Model:</span>
+                      <span className="text-gray-600">{t('model') || "Model:"}</span>
                       <span className="font-medium text-black">
                         {product.model_number}
                       </span>
@@ -784,7 +792,7 @@ const ProductDetailPage = () => {
                   )}
                   {product.forklift_type && (
                     <div className="flex gap-4">
-                      <span className="text-gray-600">Yoqilg'i turi:</span>
+                      <span className="text-gray-600">{t('fuel_type') || "Yoqilg'i turi:"}</span>
                       <span className="font-medium capitalize text-black">
                         {product.forklift_type}
                       </span>
@@ -792,7 +800,7 @@ const ProductDetailPage = () => {
                   )}
                   {product.engine_type && (
                     <div className="flex gap-4">
-                      <span className="text-gray-600">Dvigatel:</span>
+                      <span className="text-gray-600">{t('engine_type') || "Dvigatel:"}</span>
                       <span className="font-medium text-black">
                         {product.engine_type}
                       </span>
@@ -801,7 +809,7 @@ const ProductDetailPage = () => {
                   {product.manufacture_year && (
                     <div className="flex gap-4">
                       <span className="text-gray-600">
-                        Ishlab chiqarilgan yili:
+                        {t('manufacture_year') || "Ishlab chiqarilgan yili:"}
                       </span>
                       <span className="font-medium text-black">
                         {product.manufacture_year}
@@ -809,8 +817,8 @@ const ProductDetailPage = () => {
                     </div>
                   )}
                   <div className="flex gap-4">
-                    <span className="text-gray-600">Mavjudligi:</span>
-                    <span className="font-medium text-green-600">Mavjud</span>
+                    <span className="text-gray-600">{t('availability') || "Mavjudligi:"}</span>
+                    <span className="font-medium text-green-600">{t('available') || "Mavjud"}</span>
                   </div>
                 </div>
               </div>
@@ -819,12 +827,12 @@ const ProductDetailPage = () => {
                 <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-center sm:space-y-0">
                   <div>
                     <span className="text-2xl font-medium text-gray-600">
-                      Mavjud
+                      {t('available') || "Mavjud"}
                     </span>
                     <div className="flex items-center space-x-2 mt-2">
                       <div className="w-3 h-3 rounded-full bg-green-500"></div>
                       <span className="text-sm font-medium text-green-600">
-                        Mavjud
+                        {t('available') || "Mavjud"}
                       </span>
                     </div>
                   </div>
@@ -834,7 +842,7 @@ const ProductDetailPage = () => {
                     className="bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
                   >
                     <ShoppingCart className="w-4 h-4" />
-                    <span>Sotib olish</span>
+                    <span>{t('purchase') || "Sotib olish"}</span>
                   </button>
                 </div>
               </div>
@@ -847,13 +855,13 @@ const ProductDetailPage = () => {
           <div className="w-full max-w-7xl mx-auto px-4">
             <div className="flex flex-row justify-between items-center mb-6">
               <h2 className="text-xl lg:text-2xl xl:text-3xl font-bold text-gray-900">
-                Mahsulotlar
+                {t('related_products') || "Mahsulotlar"}
               </h2>
               <Link
                 href="/products"
                 className="bg-white hover:bg-gray-50 text-gray-800 font-medium transition-colors border border-yellow-500 hover:border-yellow-600 px-4 py-2 rounded-xl text-sm flex items-center justify-center"
               >
-                Barchasi →
+                {t('seeAllResults') || "Barchasi"} →
               </Link>
             </div>
 
@@ -890,7 +898,7 @@ const ProductDetailPage = () => {
 
                         <div className="flex justify-between items-center">
                           <span className="text-sm lg:text-base font-medium text-gray-600">
-                            bor
+                            {t('available') || "bor"}
                           </span>
                           {relatedProduct.capacity_kg && (
                             <span className="text-xs lg:text-sm text-gray-500">
@@ -905,7 +913,7 @@ const ProductDetailPage = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500">Tegishli mahsulotlar topilmadi</p>
+                <p className="text-gray-500">{t('noResults') || "Tegishli mahsulotlar topilmadi"}</p>
               </div>
             )}
           </div>

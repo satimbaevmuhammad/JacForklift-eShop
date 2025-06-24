@@ -15,9 +15,9 @@ const CategoryDetailPage = () => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [categoryInfo, setCategoryInfo] = useState(null)
-    const [currentLang, setCurrentLang] = useState(i18n.language)
+    const [currentLanguage, setCurrentLanguage] = useState(i18n.language) // Joriy tilni kuzatish
 
-    // Kategoriya ma'lumotlari - Categories komponentidagi ma'lumotlar bilan mos kelishi kerak
+    // Kategoriya ma'lumotlari
     const categories = {
         1: { name: "Dizelli transportlar", key: "diesel" },
         2: { name: "Elektri transportlar", key: "Electric" },
@@ -42,10 +42,12 @@ const CategoryDetailPage = () => {
     // Til o'zgarishini kuzatish
     useEffect(() => {
         const handleLanguageChange = (lng) => {
-            setCurrentLang(lng)
+            console.log('Til o\'zgartirildi:', lng)
+            setCurrentLanguage(lng) // Joriy tilni yangilash
+
             // Til o'zgarganda mahsulotlarni qayta yuklash
             if (categoryInfo) {
-                fetchCategoryProducts(categoryInfo.key)
+                fetchCategoryProducts(categoryInfo.key, lng)
             }
         }
 
@@ -67,7 +69,7 @@ const CategoryDetailPage = () => {
                 if (savedCategory) {
                     const parsedCategory = JSON.parse(savedCategory)
                     setCategoryInfo(parsedCategory)
-                    fetchCategoryProducts(parsedCategory.key)
+                    fetchCategoryProducts(parsedCategory.key, currentLanguage)
                     return
                 }
             }
@@ -78,83 +80,135 @@ const CategoryDetailPage = () => {
         }
 
         setCategoryInfo(category)
-        fetchCategoryProducts(category.key)
+        fetchCategoryProducts(category.key, currentLanguage)
     }, [params.id, t])
 
-    const fetchCategoryProducts = async (categoryKey) => {
+    const fetchCategoryProducts = async (categoryKey, lang = null) => {
         try {
             setLoading(true)
             setError(null)
 
-            console.log('Mahsulotlar yuklanmoqda, kategoriya:', categoryKey, 'til:', currentLang)
+            // Joriy tilni olish
+            const requestLanguage = lang || currentLanguage || i18n.language
+            console.log('Mahsulotlar yuklanmoqda, kategoriya:', categoryKey, 'til:', requestLanguage)
 
-            // API so'roviga til parametrini qo'shish
-            let response = await fetch('https://api.jacforklift.uz/api/api/products/category/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    category_name: categoryKey,
-                    lang: currentLang // Til parametrini qo'shish
-                })
-            })
-
-            let data = null
             let allProducts = []
 
-            if (response.ok) {
-                data = await response.json()
-                console.log('POST API javob:', data)
+            // 1. Birinchi - POST so'rov products/category/ API ga
+            try {
+                const postResponse = await fetch('https://api.jacforklift.uz/api/api/products/category/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept-Language': requestLanguage, // Header qo'shish
+                    },
+                    body: JSON.stringify({
+                        category_name: categoryKey,
+                        lang: requestLanguage // Til parametri
+                    })
+                })
 
-                // API dan kelgan ma'lumotlarni to'g'ri formatda olish
-                if (data.forklifts && data.forklifts.results) {
-                    allProducts = [...allProducts, ...data.forklifts.results]
-                }
+                if (postResponse.ok) {
+                    const postData = await postResponse.json()
+                    console.log('POST API javob:', postData)
 
-                if (data.spare_parts && data.spare_parts.results) {
-                    allProducts = [...allProducts, ...data.spare_parts.results]
-                }
+                    // API dan kelgan ma'lumotlarni to'g'ri formatda olish
+                    if (postData.forklifts && postData.forklifts.results) {
+                        allProducts = [...allProducts, ...postData.forklifts.results]
+                    }
 
-                if (data.products && Array.isArray(data.products)) {
-                    allProducts = [...allProducts, ...data.products]
-                }
+                    if (postData.spare_parts && postData.spare_parts.results) {
+                        allProducts = [...allProducts, ...postData.spare_parts.results]
+                    }
 
-                if (Array.isArray(data)) {
-                    allProducts = data
+                    if (postData.products && Array.isArray(postData.products)) {
+                        allProducts = [...allProducts, ...postData.products]
+                    }
+
+                    if (Array.isArray(postData)) {
+                        allProducts = postData
+                    }
                 }
+            } catch (postError) {
+                console.log('POST so\'rov xatosi:', postError)
             }
 
-            // Agar POST so'rov muvaffaqiyatsiz bo'lsa yoki mahsulotlar kam bo'lsa, GET so'rov
+            // 2. Agar POST dan yetarli natija kelmasa, GET so'rov forklifts API ga
             if (allProducts.length === 0) {
                 console.log('POST so\'rov natijasiz, GET so\'rov sinovdan o\'tkazilmoqda...')
 
                 try {
-                    // GET so'roviga ham til parametrini qo'shish
-                    response = await fetch(`https://api.jacforklift.uz/api/api/forklifts/?category=${categoryKey}&lang=${currentLang}`)
+                    const getResponse = await fetch(`https://api.jacforklift.uz/api/api/forklifts/?category=${encodeURIComponent(categoryKey)}&lang=${requestLanguage}`, {
+                        headers: {
+                            'Accept-Language': requestLanguage,
+                        }
+                    })
 
-                    if (response.ok) {
-                        data = await response.json()
-                        console.log('GET API javob:', data)
+                    if (getResponse.ok) {
+                        const getData = await getResponse.json()
+                        console.log('GET API javob:', getData)
 
-                        if (data.results && Array.isArray(data.results)) {
-                            allProducts = data.results
-                        } else if (Array.isArray(data)) {
-                            allProducts = data
+                        if (getData.results && Array.isArray(getData.results)) {
+                            allProducts = getData.results
+                        } else if (Array.isArray(getData)) {
+                            allProducts = getData
                         }
                     }
                 } catch (getError) {
-                    console.log('GET so\'rov ham ishlamadi:', getError)
+                    console.log('GET so\'rov xatosi:', getError)
                 }
             }
 
-            // Agar hali ham mahsulotlar yo'q bo'lsa, fallback mahsulotlar
+            // 3. Agar hali ham mahsulotlar yo'q bo'lsa, faqat til bilan so'rov
+            if (allProducts.length === 0) {
+                console.log('Kategoriya bilan so\'rov natijasiz, faqat til bilan urinib ko\'rilmoqda...')
+
+                try {
+                    const langResponse = await fetch(`https://api.jacforklift.uz/api/api/forklifts/?lang=${requestLanguage}`, {
+                        headers: {
+                            'Accept-Language': requestLanguage,
+                        }
+                    })
+
+                    if (langResponse.ok) {
+                        const langData = await langResponse.json()
+                        console.log('Faqat til bilan API javob:', langData)
+
+                        let filteredProducts = []
+
+                        if (langData.results && Array.isArray(langData.results)) {
+                            filteredProducts = langData.results
+                        } else if (Array.isArray(langData)) {
+                            filteredProducts = langData
+                        }
+
+                        // Kategoriya bo'yicha filter qilish
+                        if (filteredProducts.length > 0) {
+                            allProducts = filteredProducts.filter(product => {
+                                if (!product.category) return false
+                                const productCategory = product.category.toLowerCase()
+                                const searchCategory = categoryKey.toLowerCase()
+                                return productCategory.includes(searchCategory) || searchCategory.includes(productCategory)
+                            })
+                        }
+                    }
+                } catch (langError) {
+                    console.log('Faqat til bilan so\'rov xatosi:', langError)
+                }
+            }
+
+            // 4. Agar hali ham mahsulotlar yo'q bo'lsa, fallback mahsulotlar
             if (allProducts.length === 0) {
                 console.log('Hech qanday mahsulot topilmadi, fallback ma\'lumotlardan foydalanilmoqda')
-                allProducts = generateFallbackProducts(categoryKey)
+                allProducts = generateFallbackProducts(categoryKey, requestLanguage)
             }
 
             console.log('Yakuniy mahsulotlar soni:', allProducts.length)
+            if (allProducts.length > 0) {
+                console.log('Birinchi mahsulot:', allProducts[0])
+                console.log('Til bo\'yicha nom (current lang):', getProductName(allProducts[0], requestLanguage))
+            }
+
             setProducts(allProducts)
 
         } catch (err) {
@@ -162,58 +216,76 @@ const CategoryDetailPage = () => {
             setError(t('api_error_fallback'))
 
             // Xato holatida fallback mahsulotlar
-            const fallbackProducts = generateFallbackProducts(categoryKey)
+            const fallbackProducts = generateFallbackProducts(categoryKey, lang || currentLanguage)
             setProducts(fallbackProducts)
         } finally {
             setLoading(false)
         }
     }
 
-    const generateFallbackProducts = (categoryKey) => {
+    const generateFallbackProducts = (categoryKey, lang = 'uz') => {
+        // Til bo'yicha fallback mahsulotlar
         const fallbackMap = {
-            'diesel': [
-                { id: 'diesel-1', name: 'JAC Dizelli Forklift 2.5T', price_usd: '18500', model_number: 'CPCD25', capacity_kg: '2500', engine_type: 'Dizel', manufacture_year: '2024' },
-                { id: 'diesel-2', name: 'JAC Dizelli Forklift 3.0T', price_usd: '21000', model_number: 'CPCD30', capacity_kg: '3000', engine_type: 'Dizel', manufacture_year: '2024' },
-                { id: 'diesel-3', name: 'JAC Dizelli Forklift 3.5T', price_usd: '24500', model_number: 'CPCD35', capacity_kg: '3500', engine_type: 'Dizel', manufacture_year: '2024' }
-            ],
-            'Electric': [
-                { id: 'electric-1', name: 'JAC Elektr Forklift 1.5T', price_usd: '15000', model_number: 'CPD15', capacity_kg: '1500', engine_type: 'Elektr', manufacture_year: '2024' },
-                { id: 'electric-2', name: 'JAC Elektr Forklift 2.0T', price_usd: '17500', model_number: 'CPD20', capacity_kg: '2000', engine_type: 'Elektr', manufacture_year: '2024' },
-                { id: 'electric-3', name: 'JAC Elektr Forklift 2.5T', price_usd: '19500', model_number: 'CPD25E', capacity_kg: '2500', engine_type: 'Elektr', manufacture_year: '2024' }
-            ],
-            'Petrol': [
-                { id: 'petrol-1', name: 'JAC Benzinli Forklift 2.0T', price_usd: '16500', model_number: 'CPQD20', capacity_kg: '2000', engine_type: 'Benzin', manufacture_year: '2024' },
-                { id: 'petrol-2', name: 'JAC Benzinli Forklift 2.5T', price_usd: '18000', model_number: 'CPQD25', capacity_kg: '2500', engine_type: 'Benzin', manufacture_year: '2024' },
-                { id: 'petrol-3', name: 'JAC Benzinli Forklift 3.0T', price_usd: '20500', model_number: 'CPQD30', capacity_kg: '3000', engine_type: 'Benzin', manufacture_year: '2024' }
-            ],
-            'lpg': [
-                { id: 'lpg-1', name: 'JAC LPG Forklift 2.5T', price_usd: '19000', model_number: 'CPLG25', capacity_kg: '2500', engine_type: 'LPG', manufacture_year: '2024' },
-                { id: 'lpg-2', name: 'JAC LPG Forklift 3.0T', price_usd: '21500', model_number: 'CPLG30', capacity_kg: '3000', engine_type: 'LPG', manufacture_year: '2024' }
-            ],
-            'electric pallet': [
-                { id: 'pallet-1', name: 'JAC Elektr Pallet Mashinasi EPT20', price_usd: '8500', model_number: 'EPT20', capacity_kg: '2000', engine_type: 'Elektr', manufacture_year: '2024' },
-                { id: 'pallet-2', name: 'JAC Elektr Pallet Mashinasi EPT25', price_usd: '9000', model_number: 'EPT25', capacity_kg: '2500', engine_type: 'Elektr', manufacture_year: '2024' }
-            ],
-            'PALLET STACKER': [
-                { id: 'stacker-1', name: 'JAC Elektr Stacker 1.0T', price_usd: '12000', model_number: 'ES10', capacity_kg: '1000', engine_type: 'Elektr', manufacture_year: '2024' },
-                { id: 'stacker-2', name: 'JAC Elektr Stacker 1.5T', price_usd: '14000', model_number: 'ES15', capacity_kg: '1500', engine_type: 'Elektr', manufacture_year: '2024' }
-            ],
-            'REACH TRUCK': [
-                { id: 'reach-1', name: 'JAC Reach Truck 1.5T', price_usd: '22000', model_number: 'CQE15', capacity_kg: '1500', engine_type: 'Elektr', manufacture_year: '2024' },
-                { id: 'reach-2', name: 'JAC Reach Truck 2.0T', price_usd: '25000', model_number: 'CQE20', capacity_kg: '2000', engine_type: 'Elektr', manufacture_year: '2024' }
-            ],
-            'Handle Pallets': [
-                { id: 'handle-1', name: 'JAC Qo\'l Pallet Mashinasi', price_usd: '1200', model_number: 'HPT25', capacity_kg: '2500', engine_type: 'Qo\'l', manufacture_year: '2024' },
-                { id: 'handle-2', name: 'JAC Qo\'l Pallet Mashinasi', price_usd: '1400', model_number: 'HPT30', capacity_kg: '3000', engine_type: 'Qo\'l', manufacture_year: '2024' }
-            ],
-            'spare': [
-                { id: 'spare-1', name: 'JAC Forklift Ehtiyot Qismlari To\'plami', price_usd: '500', model_number: 'SP-001', manufacture_year: '2024' },
-                { id: 'spare-2', name: 'JAC Elektr Motor', price_usd: '2500', model_number: 'EM-15', manufacture_year: '2024' },
-                { id: 'spare-3', name: 'JAC Gidravlik Pompa', price_usd: '1800', model_number: 'HP-25', manufacture_year: '2024' }
-            ]
+            'diesel': {
+                'uz': [
+                    { id: 'diesel-1', name: 'JAC Dizel Yuklagich 2.5T', name_uz: 'JAC Dizel Yuklagich 2.5T', name_ru: 'JAC Дизельный Погрузчик 2.5Т', name_en: 'JAC Diesel Forklift 2.5T', price_usd: '18500', model_number: 'CPCD25', capacity_kg: '2500', engine_type: 'Dizel', manufacture_year: '2024' },
+                    { id: 'diesel-2', name: 'JAC Dizel Yuklagich 3.0T', name_uz: 'JAC Dizel Yuklagich 3.0T', name_ru: 'JAC Дизельный Погрузчик 3.0Т', name_en: 'JAC Diesel Forklift 3.0T', price_usd: '21000', model_number: 'CPCD30', capacity_kg: '3000', engine_type: 'Dizel', manufacture_year: '2024' },
+                    { id: 'diesel-3', name: 'JAC Dizel Yuklagich 3.5T', name_uz: 'JAC Dizel Yuklagich 3.5T', name_ru: 'JAC Дизельный Погрузчик 3.5Т', name_en: 'JAC Diesel Forklift 3.5T', price_usd: '24500', model_number: 'CPCD35', capacity_kg: '3500', engine_type: 'Dizel', manufacture_year: '2024' }
+                ],
+                'ru': [
+                    { id: 'diesel-1', name: 'JAC Дизельный Погрузчик 2.5Т', name_uz: 'JAC Dizel Yuklagich 2.5T', name_ru: 'JAC Дизельный Погрузчик 2.5Т', name_en: 'JAC Diesel Forklift 2.5T', price_usd: '18500', model_number: 'CPCD25', capacity_kg: '2500', engine_type: 'Дизель', manufacture_year: '2024' },
+                    { id: 'diesel-2', name: 'JAC Дизельный Погрузчик 3.0Т', name_uz: 'JAC Dizel Yuklagich 3.0T', name_ru: 'JAC Дизельный Погрузчик 3.0Т', name_en: 'JAC Diesel Forklift 3.0T', price_usd: '21000', model_number: 'CPCD30', capacity_kg: '3000', engine_type: 'Дизель', manufacture_year: '2024' },
+                    { id: 'diesel-3', name: 'JAC Дизельный Погрузчик 3.5Т', name_uz: 'JAC Dizel Yuklagich 3.5T', name_ru: 'JAC Дизельный Погрузчик 3.5Т', name_en: 'JAC Diesel Forklift 3.5T', price_usd: '24500', model_number: 'CPCD35', capacity_kg: '3500', engine_type: 'Дизель', manufacture_year: '2024' }
+                ],
+                'en': [
+                    { id: 'diesel-1', name: 'JAC Diesel Forklift 2.5T', name_uz: 'JAC Dizel Yuklagich 2.5T', name_ru: 'JAC Дизельный Погрузчик 2.5Т', name_en: 'JAC Diesel Forklift 2.5T', price_usd: '18500', model_number: 'CPCD25', capacity_kg: '2500', engine_type: 'Diesel', manufacture_year: '2024' },
+                    { id: 'diesel-2', name: 'JAC Diesel Forklift 3.0T', name_uz: 'JAC Dizel Yuklagich 3.0T', name_ru: 'JAC Дизельный Погрузчик 3.0Т', name_en: 'JAC Diesel Forklift 3.0T', price_usd: '21000', model_number: 'CPCD30', capacity_kg: '3000', engine_type: 'Diesel', manufacture_year: '2024' },
+                    { id: 'diesel-3', name: 'JAC Diesel Forklift 3.5T', name_uz: 'JAC Dizel Yuklagich 3.5T', name_ru: 'JAC Дизельный Погрузчик 3.5Т', name_en: 'JAC Diesel Forklift 3.5T', price_usd: '24500', model_number: 'CPCD35', capacity_kg: '3500', engine_type: 'Diesel', manufacture_year: '2024' }
+                ]
+            },
+            'Electric': {
+                'uz': [
+                    { id: 'electric-1', name: 'JAC Elektr Yuklagich 1.5T', name_uz: 'JAC Elektr Yuklagich 1.5T', name_ru: 'JAC Электрический Погрузчик 1.5Т', name_en: 'JAC Electric Forklift 1.5T', price_usd: '15000', model_number: 'CPD15', capacity_kg: '1500', engine_type: 'Elektr', manufacture_year: '2024' },
+                    { id: 'electric-2', name: 'JAC Elektr Yuklagich 2.0T', name_uz: 'JAC Elektr Yuklagich 2.0T', name_ru: 'JAC Электрический Погрузчик 2.0Т', name_en: 'JAC Electric Forklift 2.0T', price_usd: '17500', model_number: 'CPD20', capacity_kg: '2000', engine_type: 'Elektr', manufacture_year: '2024' },
+                    { id: 'electric-3', name: 'JAC Elektr Yuklagich 2.5T', name_uz: 'JAC Elektr Yuklagich 2.5T', name_ru: 'JAC Электрический Погрузчик 2.5Т', name_en: 'JAC Electric Forklift 2.5T', price_usd: '19500', model_number: 'CPD25E', capacity_kg: '2500', engine_type: 'Elektr', manufacture_year: '2024' }
+                ],
+                'ru': [
+                    { id: 'electric-1', name: 'JAC Электрический Погрузчик 1.5Т', name_uz: 'JAC Elektr Yuklagich 1.5T', name_ru: 'JAC Электрический Погрузчик 1.5Т', name_en: 'JAC Electric Forklift 1.5T', price_usd: '15000', model_number: 'CPD15', capacity_kg: '1500', engine_type: 'Электрический', manufacture_year: '2024' },
+                    { id: 'electric-2', name: 'JAC Электрический Погрузчик 2.0Т', name_uz: 'JAC Elektr Yuklagich 2.0T', name_ru: 'JAC Электрический Погрузчик 2.0Т', name_en: 'JAC Electric Forklift 2.0T', price_usd: '17500', model_number: 'CPD20', capacity_kg: '2000', engine_type: 'Электрический', manufacture_year: '2024' },
+                    { id: 'electric-3', name: 'JAC Электрический Погрузчик 2.5Т', name_uz: 'JAC Elektr Yuklagich 2.5T', name_ru: 'JAC Электрический Погрузчик 2.5Т', name_en: 'JAC Electric Forklift 2.5T', price_usd: '19500', model_number: 'CPD25E', capacity_kg: '2500', engine_type: 'Электрический', manufacture_year: '2024' }
+                ],
+                'en': [
+                    { id: 'electric-1', name: 'JAC Electric Forklift 1.5T', name_uz: 'JAC Elektr Yuklagich 1.5T', name_ru: 'JAC Электрический Погрузчик 1.5Т', name_en: 'JAC Electric Forklift 1.5T', price_usd: '15000', model_number: 'CPD15', capacity_kg: '1500', engine_type: 'Electric', manufacture_year: '2024' },
+                    { id: 'electric-2', name: 'JAC Electric Forklift 2.0T', name_uz: 'JAC Elektr Yuklagich 2.0T', name_ru: 'JAC Электрический Погрузчик 2.0Т', name_en: 'JAC Electric Forklift 2.0T', price_usd: '17500', model_number: 'CPD20', capacity_kg: '2000', engine_type: 'Electric', manufacture_year: '2024' },
+                    { id: 'electric-3', name: 'JAC Electric Forklift 2.5T', name_uz: 'JAC Elektr Yuklagich 2.5T', name_ru: 'JAC Электрический Погрузчик 2.5Т', name_en: 'JAC Electric Forklift 2.5T', price_usd: '19500', model_number: 'CPD25E', capacity_kg: '2500', engine_type: 'Electric', manufacture_year: '2024' }
+                ]
+            },
+            'Petrol': {
+                'uz': [
+                    { id: 'petrol-1', name: 'JAC Benzinli Yuklagich 2.0T', name_uz: 'JAC Benzinli Yuklagich 2.0T', name_ru: 'JAC Бензиновый Погрузчик 2.0Т', name_en: 'JAC Petrol Forklift 2.0T', price_usd: '16500', model_number: 'CPQD20', capacity_kg: '2000', engine_type: 'Benzin', manufacture_year: '2024' },
+                    { id: 'petrol-2', name: 'JAC Benzinli Yuklagich 2.5T', name_uz: 'JAC Benzinli Yuklagich 2.5T', name_ru: 'JAC Бензиновый Погрузчик 2.5Т', name_en: 'JAC Petrol Forklift 2.5T', price_usd: '18000', model_number: 'CPQD25', capacity_kg: '2500', engine_type: 'Benzin', manufacture_year: '2024' },
+                    { id: 'petrol-3', name: 'JAC Benzinli Yuklagich 3.0T', name_uz: 'JAC Benzinli Yuklagich 3.0T', name_ru: 'JAC Бензиновый Погрузчик 3.0Т', name_en: 'JAC Petrol Forklift 3.0T', price_usd: '20500', model_number: 'CPQD30', capacity_kg: '3000', engine_type: 'Benzin', manufacture_year: '2024' }
+                ],
+                'ru': [
+                    { id: 'petrol-1', name: 'JAC Бензиновый Погрузчик 2.0Т', name_uz: 'JAC Benzinli Yuklagich 2.0T', name_ru: 'JAC Бензиновый Погрузчик 2.0Т', name_en: 'JAC Petrol Forklift 2.0T', price_usd: '16500', model_number: 'CPQD20', capacity_kg: '2000', engine_type: 'Бензин', manufacture_year: '2024' },
+                    { id: 'petrol-2', name: 'JAC Бензиновый Погрузчик 2.5Т', name_uz: 'JAC Benzinli Yuklagich 2.5T', name_ru: 'JAC Бензиновый Погрузчик 2.5Т', name_en: 'JAC Petrol Forklift 2.5T', price_usd: '18000', model_number: 'CPQD25', capacity_kg: '2500', engine_type: 'Бензин', manufacture_year: '2024' },
+                    { id: 'petrol-3', name: 'JAC Бензиновый Погрузчик 3.0Т', name_uz: 'JAC Benzinli Yuklagich 3.0T', name_ru: 'JAC Бензиновый Погрузчик 3.0Т', name_en: 'JAC Petrol Forklift 3.0T', price_usd: '20500', model_number: 'CPQD30', capacity_kg: '3000', engine_type: 'Бензин', manufacture_year: '2024' }
+                ],
+                'en': [
+                    { id: 'petrol-1', name: 'JAC Petrol Forklift 2.0T', name_uz: 'JAC Benzinli Yuklagich 2.0T', name_ru: 'JAC Бензиновый Погрузчик 2.0Т', name_en: 'JAC Petrol Forklift 2.0T', price_usd: '16500', model_number: 'CPQD20', capacity_kg: '2000', engine_type: 'Petrol', manufacture_year: '2024' },
+                    { id: 'petrol-2', name: 'JAC Petrol Forklift 2.5T', name_uz: 'JAC Benzinli Yuklagich 2.5T', name_ru: 'JAC Бензиновый Погрузчик 2.5Т', name_en: 'JAC Petrol Forklift 2.5T', price_usd: '18000', model_number: 'CPQD25', capacity_kg: '2500', engine_type: 'Petrol', manufacture_year: '2024' },
+                    { id: 'petrol-3', name: 'JAC Petrol Forklift 3.0T', name_uz: 'JAC Benzinli Yuklagich 3.0T', name_ru: 'JAC Бензиновый Погрузчик 3.0Т', name_en: 'JAC Petrol Forklift 3.0T', price_usd: '20500', model_number: 'CPQD30', capacity_kg: '3000', engine_type: 'Petrol', manufacture_year: '2024' }
+                ]
+            }
         }
 
-        return fallbackMap[categoryKey] || fallbackMap['diesel']
+        const categoryProducts = fallbackMap[categoryKey]
+        if (categoryProducts && categoryProducts[lang]) {
+            return categoryProducts[lang]
+        }
+
+        // Agar til topilmasa, o'zbek tilini qaytarish
+        return fallbackMap[categoryKey]?.['uz'] || fallbackMap['diesel']['uz']
     }
 
     const handleBackClick = () => {
@@ -228,6 +300,44 @@ const CategoryDetailPage = () => {
         }
 
         router.push(`/karaDetail/${productId}`)
+    }
+
+    // Mahsulot nomini ko'rsatish funksiyasi - YANGILANGAN
+    const getProductName = (product, lang = null) => {
+        // Joriy tilni olish
+        const targetLang = lang || currentLanguage || i18n.language
+
+        console.log('Product name olish:', {
+            product: product?.name,
+            targetLang,
+            name_uz: product?.name_uz,
+            name_ru: product?.name_ru,
+            name_en: product?.name_en
+        })
+
+        // Birinchi - til bo'yicha nomlarni tekshirish
+        switch (targetLang) {
+            case 'uz':
+                if (product.name_uz) return product.name_uz
+                break
+            case 'ru':
+                if (product.name_ru) return product.name_ru
+                break
+            case 'en':
+                if (product.name_en) return product.name_en
+                break
+        }
+
+        // Yoki translations obyektida bo'lsa
+        if (product.translations) {
+            const translation = product.translations[targetLang]
+            if (translation && translation.name) {
+                return translation.name
+            }
+        }
+
+        // Fallback - asosiy name yoki title
+        return product.name || product.title || t('product.defaultName')
     }
 
     if (loading) {
@@ -306,7 +416,7 @@ const CategoryDetailPage = () => {
                                         {(product.images && product.images.length > 0) ? (
                                             <img
                                                 src={product.images[0].image}
-                                                alt={product.name || product.title || t('product.defaultName')}
+                                                alt={getProductName(product)}
                                                 className="max-w-full max-h-full object-contain"
                                                 onError={(e) => {
                                                     e.target.style.display = 'none'
@@ -316,7 +426,7 @@ const CategoryDetailPage = () => {
                                         ) : product.image ? (
                                             <img
                                                 src={product.image}
-                                                alt={product.name || product.title || t('product.defaultName')}
+                                                alt={getProductName(product)}
                                                 className="max-w-full max-h-full object-contain"
                                                 onError={(e) => {
                                                     e.target.style.display = 'none'
@@ -350,9 +460,9 @@ const CategoryDetailPage = () => {
                                         </div>
                                     </div>
 
-                                    {/* Product Title */}
+                                    {/* Product Title - YANGILANGAN til boshqaruvi bilan */}
                                     <h3 className="font-semibold text-gray-800 text-base mb-3 line-clamp-2 min-h-[48px]">
-                                        {product.name || product.title || t('product.defaultName')}
+                                        {getProductName(product, currentLanguage)}
                                     </h3>
 
                                     {/* Price */}

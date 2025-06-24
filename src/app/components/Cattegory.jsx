@@ -93,6 +93,47 @@ const Categories = () => {
                     const categoryKey = item.category || item.type || item.fuel_type || 'other'
                     const categoryName = item.category_name || item.type_name || item.fuel_type || categoryKey
 
+                    // DEBUG: Har bir item uchun ma'lumotlarni console ga chiqarish
+                    console.log(`Item ${index}:`, {
+                        categoryKey: categoryKey,
+                        categoryName: categoryName,
+                        category: item.category,
+                        category_name: item.category_name,
+                        type: item.type,
+                        type_name: item.type_name,
+                        fuel_type: item.fuel_type,
+                        lang: currentLang
+                    })
+
+                    // "Elektr seriyasi" kategoriyasini bloklash (barcha tillarda va barcha variantlarda)
+                    const isElektrSeriyasi =
+                        categoryName === "Elektr seriyasi" ||
+                        categoryName === "Электр серияси" ||
+                        categoryName === "Электрическая серия" ||  // Yangi rus varianti
+                        categoryName === "Electric series" ||
+                        categoryKey === "elektr_seriyasi" ||
+                        categoryKey === "electric_series" ||
+                        categoryKey === "Elektr seriyasi" ||
+                        categoryKey === "Электр серияси" ||
+                        categoryKey === "Электрическая серия" ||  // Yangi rus varianti
+                        categoryName.toLowerCase().includes("elektr seriyasi") ||
+                        categoryName.toLowerCase().includes("электр серияси") ||
+                        categoryName.toLowerCase().includes("электрическая серия") ||  // Yangi rus varianti
+                        categoryName.toLowerCase().includes("electric series") ||
+                        categoryKey.toLowerCase().includes("elektr_seriyasi") ||
+                        categoryKey.toLowerCase().includes("electric_series") ||
+                        categoryName.toLowerCase().includes("электрическая") ||  // Rus tilida "электрическая" so'zi
+                        (categoryName && categoryName.toString().toLowerCase().includes("электрическ"))
+
+                    if (isElektrSeriyasi) {
+                        console.log('🚫 ELEKTR SERIYASI BLOKLANDI:', {
+                            categoryName: categoryName,
+                            categoryKey: categoryKey,
+                            item: item
+                        })
+                        return // Bu kategoriyani o'tkazib yuborish
+                    }
+
                     if (!categoryMap.has(categoryKey)) {
                         categoryMap.set(categoryKey, {
                             id: categoryMap.size + 1,
@@ -113,7 +154,7 @@ const Categories = () => {
                 })
 
                 formattedCategories = Array.from(categoryMap.values())
-                console.log('Generated categories from API:', formattedCategories)
+                console.log('Generated categories from API (after filtering):', formattedCategories)
             }
 
             // Agar API dan kategoriyalar kam kelsa yoki yo'q bo'lsa, fallback kategoriyalarni qo'shish
@@ -129,7 +170,7 @@ const Categories = () => {
                     {
                         id: 102,
                         name: "Elektrik transportlar",
-                        image: "/electric-forklift.png", // Yangi rasm nomi
+                        image: "/orn.png",
                         key: "Electric"
                     },
                     {
@@ -141,7 +182,7 @@ const Categories = () => {
                     {
                         id: 104,
                         name: "LPG transportlari",
-                        image: "/lpg-forklift.png", // Yangi rasm nomi
+                        image: "/stacker.png",
                         key: "lpg"
                     },
                     {
@@ -181,6 +222,23 @@ const Categories = () => {
 
                 // Fallback kategoriyalardan faqat mavjud bo'lmaganlarini qo'shish
                 fallbackCategories.forEach(fallbackCat => {
+                    // "Elektr seriyasi" kategoriyasini qo'shmaslik (barcha tillarda)
+                    if (fallbackCat.name === "Elektr seriyasi" ||
+                        fallbackCat.name === "Электр серияси" ||
+                        fallbackCat.name === "Электрическая серия" ||  // Yangi rus varianti
+                        fallbackCat.name === "Electric series" ||
+                        fallbackCat.key === "elektr_seriyasi" ||
+                        fallbackCat.key === "electric_series" ||
+                        fallbackCat.name.toLowerCase().includes("elektr seriyasi") ||
+                        fallbackCat.name.toLowerCase().includes("электр серияси") ||
+                        fallbackCat.name.toLowerCase().includes("электрическая серия") ||  // Yangi rus varianti
+                        fallbackCat.name.toLowerCase().includes("electric series") ||
+                        fallbackCat.name.toLowerCase().includes("электрическая") ||  // Rus tilida "электрическая" so'zi
+                        fallbackCat.name.toLowerCase().includes("электрическ")) {
+                        console.log('Fallback dan Elektr seriyasi bloklandı (barcha tillar + yangi rus varianti):', fallbackCat.name)
+                        return
+                    }
+
                     if (!existingKeys.includes(fallbackCat.key)) {
                         formattedCategories.push(fallbackCat)
                     }
@@ -188,13 +246,37 @@ const Categories = () => {
             }
 
             console.log('Final categories:', formattedCategories)
-            setCategories(formattedCategories)
+
+            // "Elektr seriyasi" kategoriyasini oxirgi tekshirish va olib tashlash (barcha tillarda)
+            const finalFilteredCategories = formattedCategories.filter(cat => {
+                if (cat.name === "Elektr seriyasi" ||
+                    cat.name === "Электр серияси" ||
+                    cat.name === "Электрическая серия" ||  // Yangi rus varianti
+                    cat.name === "Electric series" ||
+                    cat.key === "elektr_seriyasi" ||
+                    cat.key === "electric_series" ||
+                    cat.name.toLowerCase().includes("elektr seriyasi") ||
+                    cat.name.toLowerCase().includes("электр серияси") ||
+                    cat.name.toLowerCase().includes("электрическая серия") ||  // Yangi rus varianti
+                    cat.name.toLowerCase().includes("electric series") ||
+                    cat.key.toLowerCase().includes("elektr_seriyasi") ||
+                    cat.key.toLowerCase().includes("electric_series") ||
+                    cat.name.toLowerCase().includes("электрическая") ||  // Rus tilida "электрическая" so'zi
+                    cat.name.toLowerCase().includes("электрическ")) {
+                    console.log('Final filterlashda Elektr seriyasi olib tashlandi (barcha tillar + yangi rus varianti):', cat.name)
+                    return false
+                }
+                return true
+            })
+
+            console.log('Final filtered categories:', finalFilteredCategories)
+            setCategories(finalFilteredCategories)
             setError(null)
         } catch (error) {
             console.error('Ma\'lumotlarni yuklashda xato:', error)
             setError(error.message)
 
-            // Fallback kategoriyalar - rasm yo'llari yangilangan
+            // Fallback kategoriyalar - "Elektr seriyasi" olib tashlangan
             const fallbackCategories = [
                 {
                     id: 1,
@@ -204,8 +286,8 @@ const Categories = () => {
                 },
                 {
                     id: 2,
-                    name: "Elektri transportlar",
-                    image: "/electric-forklift.png", // Yangi rasm nomi
+                    name: "Elektrik transportlar",
+                    image: "/electric-forklift.png",
                     key: "Electric"
                 },
                 {
@@ -217,7 +299,7 @@ const Categories = () => {
                 {
                     id: 4,
                     name: "LPG transportlari",
-                    image: "/lpg-forklift.png", // Yangi rasm nomi
+                    image: "/lpg-forklift.png",
                     key: "lpg"
                 },
                 {
@@ -246,12 +328,33 @@ const Categories = () => {
                 },
                 {
                     id: 9,
-                    name: "Texnika extiyot qismlarin",
+                    name: "Texnika extiyot qismlari",
                     image: "/spare-parts.png",
                     key: "spare"
                 }
             ]
-            setCategories(fallbackCategories)
+
+            // Har bir kategoriyani tekshirish va "Elektr seriyasi"ni olib tashlash (barcha tillarda)
+            const filteredCategories = fallbackCategories.filter(cat => {
+                if (cat.name === "Elektr seriyasi" ||
+                    cat.name === "Электр серияси" ||
+                    cat.name === "Электрическая серия" ||  // Yangi rus varianti
+                    cat.name === "Electric series" ||
+                    cat.key === "elektr_seriyasi" ||
+                    cat.key === "electric_series" ||
+                    cat.name.toLowerCase().includes("elektr seriyasi") ||
+                    cat.name.toLowerCase().includes("электр серияси") ||
+                    cat.name.toLowerCase().includes("электрическая серия") ||  // Yangi rus varianti
+                    cat.name.toLowerCase().includes("electric series") ||
+                    cat.name.toLowerCase().includes("электрическая") ||  // Rus tilida "электрическая" so'zi
+                    cat.name.toLowerCase().includes("электрическ")) {
+                    console.log('Fallback kategoriyasidan Elektr seriyasi olib tashlandi (barcha tillar + yangi rus varianti):', cat.name)
+                    return false
+                }
+                return true
+            })
+
+            setCategories(filteredCategories)
         } finally {
             setLoading(false)
         }

@@ -49,7 +49,7 @@ const Products = () => {
 
       // API request with language parameter
       const productsResponse = await fetch(
-        `https://api.jacforklift.uz/api/api/forklifts/?page=1&page_size=10&lang=${currentLang}`
+        `https://api.jacforklift.uz/api/api/forklifts/?page=1&page_size=8&lang=${currentLang}`
       );
 
       if (!productsResponse.ok) {
@@ -72,7 +72,7 @@ const Products = () => {
 
       // Fetch all products for categories with language parameter
       const allProductsResponse = await fetch(
-        `https://api.jacforklift.uz/api/api/forklifts/?page_size=1000&lang=${currentLang}`
+        `https://api.jacforklift.uz/api/api/forklifts/?page_size=8&lang=${currentLang}`
       );
 
       if (allProductsResponse.ok) {
@@ -107,7 +107,7 @@ const Products = () => {
 
       // API request with language parameter
       const productsResponse = await fetch(
-        `https://api.jacforklift.uz/api/api/forklifts/?page=${nextPage}&page_size=10&lang=${currentLang}`
+        `https://api.jacforklift.uz/api/api/forklifts/?page=${nextPage}&page_size=8&lang=${currentLang}`
       );
 
       if (!productsResponse.ok) {

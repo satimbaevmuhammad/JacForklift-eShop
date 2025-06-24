@@ -22,6 +22,13 @@ const Navbar = () => {
     const mobileSearchRef = useRef(null)
     const langRef = useRef(null)
 
+    // Flag images mapping - using the images from public folder
+    const flagImages = {
+        uz: '/uzb.png',
+        ru: '/rus.png',
+        en: '/eng.png'
+    }
+
     // Listen to language changes
     useEffect(() => {
         const handleLanguageChange = (lng) => {
@@ -179,6 +186,16 @@ const Navbar = () => {
         const placeholder = e.target.parentNode.querySelector('.image-placeholder')
         if (placeholder) {
             placeholder.style.display = 'flex'
+        }
+    }
+
+    // Flag image error handler
+    const handleFlagImageError = (e) => {
+        // If flag image fails to load, fallback to text
+        e.target.style.display = 'none'
+        const textFallback = e.target.parentNode.querySelector('.flag-text-fallback')
+        if (textFallback) {
+            textFallback.style.display = 'inline-block'
         }
     }
 
@@ -351,57 +368,52 @@ const Navbar = () => {
 
                 {/* Desktop Right Side - Language + Phone */}
                 <div className='hidden md:flex items-center gap-4'>
-                    {/* Language Selector - YANGILANGAN STIL */}
+                    {/* Language Selector - Desktop */}
                     <div className='relative' ref={langRef}>
                         <button
-                            className='group flex items-center gap-2 bg-gradient-to-r from-blue-500/15 via-purple-500/15 to-pink-500/15 backdrop-blur-md rounded-[12px] px-3 py-2 shadow-lg border border-white/25 hover:border-white/40 hover:from-blue-500/25 hover:via-purple-500/25 hover:to-pink-500/25 transition-all duration-200 transform hover:scale-[1.02]'
+                            className='flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-lg px-3 py-2 border border-white/20 hover:bg-white/15 transition-all duration-200'
                             onClick={() => setIsLangOpen(!isLangOpen)}
                         >
-                            {/* Globe Icon with Animation */}
-                            <div className='relative'>
-                                <svg className='w-4 h-4 text-white/70 group-hover:text-white transition-all duration-200' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-                                    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" stroke="currentColor" strokeWidth="2" />
-                                    <path d="M2 12h20" stroke="currentColor" strokeWidth="2" />
-                                </svg>
+                            <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-white/20">
+                                <img
+                                    src={flagImages[currentLang] || flagImages.uz}
+                                    alt={currentLangInfo.name}
+                                    className="w-full h-full object-cover"
+                                    onError={handleFlagImageError}
+                                />
+                                <span className="flag-text-fallback hidden text-xs font-bold text-white">
+                                    {currentLang.toUpperCase()}
+                                </span>
                             </div>
-
-                            {/* Flag */}
-                            <span className='text-lg group-hover:scale-105 transition-transform duration-200'>
-                                {currentLangInfo.flag}
-                            </span>
-
-                            {/* Animated Arrow */}
-                            <svg className={`w-3 h-3 text-white/60 group-hover:text-white transition-all duration-200 ${isLangOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span className='text-white text-sm font-medium'>{currentLangInfo.name}</span>
+                            <svg className={`w-4 h-4 text-white/70 transition-transform duration-200 ${isLangOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
 
-                        {/* Language Dropdown - YANGILANGAN STIL */}
+                        {/* Language Dropdown - Desktop */}
                         {isLangOpen && (
-                            <div className='lang-dropdown absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-white/30 overflow-hidden min-w-[160px] animate-in slide-in-from-top-2 duration-200' style={{ zIndex: 10000 }}>
+                            <div className='lang-dropdown absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden min-w-[140px]' style={{ zIndex: 10000 }}>
                                 {Object.values(languages).map((lang) => (
                                     <button
                                         key={lang.code}
-                                        className={`w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 group ${currentLang === lang.code ?
-                                                'bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700' :
-                                                'text-gray-700 hover:text-blue-700'
-                                            }`}
+                                        className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors duration-200 ${currentLang === lang.code ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
                                         onClick={() => handleLanguageChange(lang.code)}
                                     >
-                                        {/* Flag */}
-                                        <span className='text-lg group-hover:scale-105 transition-transform duration-200'>
-                                            {lang.flag}
-                                        </span>
-
-                                        {/* Language Name */}
-                                        <span className='font-medium text-sm flex-1'>
-                                            {lang.name}
-                                        </span>
-
-                                        {/* Check Icon for Current Language */}
+                                        <div className="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center bg-gray-100">
+                                            <img
+                                                src={flagImages[lang.code]}
+                                                alt={lang.name}
+                                                className="w-full h-full object-cover"
+                                                onError={handleFlagImageError}
+                                            />
+                                            <span className="flag-text-fallback hidden text-xs font-bold text-gray-600">
+                                                {lang.code.toUpperCase()}
+                                            </span>
+                                        </div>
+                                        <span className='font-medium text-sm'>{lang.name}</span>
                                         {currentLang === lang.code && (
-                                            <svg className='w-4 h-4 text-blue-600' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className='w-4 h-4 text-blue-600 ml-auto' fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                             </svg>
                                         )}
@@ -429,46 +441,48 @@ const Navbar = () => {
 
                 {/* Mobile Icons */}
                 <div className='md:hidden flex items-center gap-3'>
-                    {/* Language Selector - Mobile YANGILANGAN STIL */}
+                    {/* Language Selector - Mobile */}
                     <div className='relative' ref={langRef}>
                         <button
-                            className='group bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-md p-2.5 rounded-xl shadow-lg border border-white/25 hover:border-white/40 hover:from-blue-500/30 hover:via-purple-500/30 hover:to-pink-500/30 transition-all duration-200 transform hover:scale-105 active:scale-95'
+                            className='bg-white/10 backdrop-blur-md p-2.5 rounded-lg border border-white/20 hover:bg-white/15 transition-all duration-200'
                             onClick={() => setIsLangOpen(!isLangOpen)}
                         >
-                            <div className='relative'>
-                                <span className='text-lg drop-shadow-md group-hover:scale-105 transition-transform duration-200'>
-                                    {currentLangInfo.flag}
+                            <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-white/20">
+                                <img
+                                    src={flagImages[currentLang] || flagImages.uz}
+                                    alt={currentLangInfo.name}
+                                    className="w-full h-full object-cover"
+                                    onError={handleFlagImageError}
+                                />
+                                <span className="flag-text-fallback hidden text-xs font-bold text-white">
+                                    {currentLang.toUpperCase()}
                                 </span>
-                                {/* Active Indicator */}
-                                <div className='absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-400 rounded-full border border-white shadow-sm'></div>
                             </div>
                         </button>
 
-                        {/* Mobile Language Dropdown - YANGILANGAN STIL */}
+                        {/* Mobile Language Dropdown */}
                         {isLangOpen && (
-                            <div className='lang-dropdown absolute right-0 top-full mt-2 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-white/30 overflow-hidden min-w-[140px] animate-in slide-in-from-top-2 duration-200' style={{ zIndex: 10000 }}>
+                            <div className='lang-dropdown absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden min-w-[120px]' style={{ zIndex: 10000 }}>
                                 {Object.values(languages).map((lang) => (
                                     <button
                                         key={lang.code}
-                                        className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 group ${currentLang === lang.code ?
-                                                'bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700' :
-                                                'text-gray-700 hover:text-blue-700'
-                                            }`}
+                                        className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors duration-200 ${currentLang === lang.code ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
                                         onClick={() => handleLanguageChange(lang.code)}
                                     >
-                                        {/* Mobile Flag */}
-                                        <span className='text-base group-hover:scale-105 transition-transform duration-200'>
-                                            {lang.flag}
-                                        </span>
-
-                                        {/* Mobile Language Name */}
-                                        <span className='font-medium text-xs flex-1'>
-                                            {lang.name}
-                                        </span>
-
-                                        {/* Mobile Check Icon */}
+                                        <div className="w-4 h-4 rounded-full overflow-hidden flex items-center justify-center bg-gray-100">
+                                            <img
+                                                src={flagImages[lang.code]}
+                                                alt={lang.name}
+                                                className="w-full h-full object-cover"
+                                                onError={handleFlagImageError}
+                                            />
+                                            <span className="flag-text-fallback hidden text-xs font-bold text-gray-600">
+                                                {lang.code.toUpperCase()}
+                                            </span>
+                                        </div>
+                                        <span className='font-medium text-xs'>{lang.name}</span>
                                         {currentLang === lang.code && (
-                                            <svg className='w-3 h-3 text-blue-600' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className='w-3 h-3 text-blue-600 ml-auto' fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                             </svg>
                                         )}
