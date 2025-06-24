@@ -321,269 +321,411 @@ const Navbar = () => {
     }
 
     return (
-        <nav className='px-4 md:px-[100px] py-4 fixed top-0 left-0 right-0' style={{ zIndex: 9999 }}>
-            {/* Background with gradient */}
-            <div className='absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-transparent backdrop-blur-[60px]'></div>
+      <nav
+        className="px-4 md:px-[100px] py-4 fixed top-0 left-0 right-0"
+        style={{ zIndex: 9999 }}
+      >
+        {/* Background with gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-transparent backdrop-blur-[60px]"></div>
 
-            <div className='relative flex justify-between items-center' style={{ zIndex: 10000 }}>
-                {/* Logo */}
-                <Link href='/main'>
-                    <div className='logo_box'>
-                        <img
-                            className='w-[80px] md:w-[108px]'
-                            src="/logo.png"
-                            alt="Logo"
-                        />
-                    </div>
-                </Link>
-
-                {/* Desktop Navigation - Centered Search */}
-                <div className='hidden md:flex items-center justify-center flex-1'>
-                    <div className='relative' ref={searchRef} style={{ zIndex: 10001 }}>
-                        <div className='flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-[12px] w-[363px] px-4 py-3 shadow-lg border border-white/20 hover:bg-white/15 transition-all duration-200'>
-                            <svg className='w-5 h-5 text-white/70' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                            <input
-                                type="text"
-                                placeholder={t('searchPlaceholder')}
-                                className='bg-transparent outline-none text-white placeholder-white/60 flex-1 text-left text-base'
-                                value={searchQuery}
-                                onChange={handleSearchChange}
-                                onFocus={handleInputFocus}
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    handleInputFocus()
-                                }}
-                                autoComplete="off"
-                                spellCheck="false"
-                            />
-                            {isLoading && (
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white/50"></div>
-                            )}
-                        </div>
-                        <SearchResults />
-                    </div>
-                </div>
-
-                {/* Desktop Right Side - Language + Phone */}
-                <div className='hidden md:flex items-center gap-4'>
-                    {/* Language Selector - Desktop */}
-                    <div className='relative' ref={langRef}>
-                        <button
-                            className='flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-lg px-3 py-2 border border-white/20 hover:bg-white/15 transition-all duration-200'
-                            onClick={() => setIsLangOpen(!isLangOpen)}
-                        >
-                            <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-white/20">
-                                <img
-                                    src={flagImages[currentLang] || flagImages.uz}
-                                    alt={currentLangInfo.name}
-                                    className="w-full h-full object-cover"
-                                    onError={handleFlagImageError}
-                                />
-                                <span className="flag-text-fallback hidden text-xs font-bold text-white">
-                                    {currentLang.toUpperCase()}
-                                </span>
-                            </div>
-                            <span className='text-white text-sm font-medium'>{currentLangInfo.name}</span>
-                            <svg className={`w-4 h-4 text-white/70 transition-transform duration-200 ${isLangOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-
-                        {/* Language Dropdown - Desktop */}
-                        {isLangOpen && (
-                            <div className='lang-dropdown absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden min-w-[140px]' style={{ zIndex: 10000 }}>
-                                {Object.values(languages).map((lang) => (
-                                    <button
-                                        key={lang.code}
-                                        className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors duration-200 ${currentLang === lang.code ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
-                                        onClick={() => handleLanguageChange(lang.code)}
-                                    >
-                                        <div className="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center bg-gray-100">
-                                            <img
-                                                src={flagImages[lang.code]}
-                                                alt={lang.name}
-                                                className="w-full h-full object-cover"
-                                                onError={handleFlagImageError}
-                                            />
-                                            <span className="flag-text-fallback hidden text-xs font-bold text-gray-600">
-                                                {lang.code.toUpperCase()}
-                                            </span>
-                                        </div>
-                                        <span className='font-medium text-sm'>{lang.name}</span>
-                                        {currentLang === lang.code && (
-                                            <svg className='w-4 h-4 text-blue-600 ml-auto' fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Phone Number */}
-                    <a
-                        href="tel:+998949876000"
-                        className='flex items-center gap-3 hover:opacity-80 transition-opacity duration-200'
-                    >
-                        <div className='w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center'>
-                            <svg className='w-5 h-5 text-white' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
-                            </svg>
-                        </div>
-                        <p className='text-white font-medium text-lg'>
-                            {t('phone')}
-                        </p>
-                    </a>
-                </div>
-
-                {/* Mobile Icons */}
-                <div className='md:hidden flex items-center gap-3'>
-                    {/* Language Selector - Mobile */}
-                    <div className='relative' ref={langRef}>
-                        <button
-                            className='bg-white/10 backdrop-blur-md p-2.5 rounded-lg border border-white/20 hover:bg-white/15 transition-all duration-200'
-                            onClick={() => setIsLangOpen(!isLangOpen)}
-                        >
-                            <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-white/20">
-                                <img
-                                    src={flagImages[currentLang] || flagImages.uz}
-                                    alt={currentLangInfo.name}
-                                    className="w-full h-full object-cover"
-                                    onError={handleFlagImageError}
-                                />
-                                <span className="flag-text-fallback hidden text-xs font-bold text-white">
-                                    {currentLang.toUpperCase()}
-                                </span>
-                            </div>
-                        </button>
-
-                        {/* Mobile Language Dropdown */}
-                        {isLangOpen && (
-                            <div className='lang-dropdown absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden min-w-[120px]' style={{ zIndex: 10000 }}>
-                                {Object.values(languages).map((lang) => (
-                                    <button
-                                        key={lang.code}
-                                        className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors duration-200 ${currentLang === lang.code ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
-                                        onClick={() => handleLanguageChange(lang.code)}
-                                    >
-                                        <div className="w-4 h-4 rounded-full overflow-hidden flex items-center justify-center bg-gray-100">
-                                            <img
-                                                src={flagImages[lang.code]}
-                                                alt={lang.name}
-                                                className="w-full h-full object-cover"
-                                                onError={handleFlagImageError}
-                                            />
-                                            <span className="flag-text-fallback hidden text-xs font-bold text-gray-600">
-                                                {lang.code.toUpperCase()}
-                                            </span>
-                                        </div>
-                                        <span className='font-medium text-xs'>{lang.name}</span>
-                                        {currentLang === lang.code && (
-                                            <svg className='w-3 h-3 text-blue-600 ml-auto' fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Search Icon - Mobile */}
-                    <div className='relative' ref={mobileSearchRef} style={{ zIndex: 10001 }}>
-                        <button
-                            className='bg-white/15 backdrop-blur-md p-3 rounded-full shadow-lg border border-white/25 hover:bg-white/20 transition-all duration-200'
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                setIsSearchOpen(!isSearchOpen)
-                            }}
-                        >
-                            <svg className='w-5 h-5 text-white' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </button>
-
-                        {/* Mobile Search Overlay */}
-                        {isSearchOpen && (
-                            <div className="fixed top-0 left-0 right-0 h-[100px] bg-black/30 backdrop-blur-[60px]" style={{ zIndex: 10000 }}>
-                                <div className="flex justify-center items-center h-full px-4">
-                                    <div className="relative w-full max-w-[343px]" style={{ zIndex: 10001 }}>
-                                        <div className='flex items-center gap-3 bg-white/20 backdrop-blur-md rounded-[12px] px-4 py-3 shadow-lg border border-white/30 hover:bg-white/25 transition-all duration-200'>
-                                            <svg className='w-5 h-5 text-white/70' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                            </svg>
-                                            <input
-                                                type="text"
-                                                placeholder={t('searchPlaceholderMobile')}
-                                                className='bg-transparent outline-none text-white placeholder-white/60 flex-1 text-left text-base'
-                                                value={searchQuery}
-                                                onChange={handleSearchChange}
-                                                onFocus={handleInputFocus}
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    handleInputFocus()
-                                                }}
-                                                autoFocus
-                                                autoComplete="off"
-                                                spellCheck="false"
-                                                style={{ zIndex: 10002 }}
-                                            />
-                                            {isLoading && (
-                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white/50"></div>
-                                            )}
-                                            <button
-                                                className='text-white/70 hover:text-white transition-colors duration-200'
-                                                onClick={() => setIsSearchOpen(false)}
-                                            >
-                                                <svg className='w-5 h-5' fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        </div>
-
-                                        {/* Search Results for Mobile */}
-                                        <SearchResults isMobile={true} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Call Icon - Mobile */}
-                    <div className='relative'>
-                        <button
-                            className='bg-yellow-400/90 backdrop-blur-md p-3 rounded-full shadow-lg border border-yellow-300/30 hover:bg-yellow-400 transition-all duration-200'
-                            onClick={() => setIsCallOpen(!isCallOpen)}
-                        >
-                            <svg className='w-5 h-5 text-white' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
-                            </svg>
-                        </button>
-
-                        {/* Mobile Call Dropdown */}
-                        {isCallOpen && (
-                            <div className='absolute right-0 top-full mt-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl border border-white/30 p-4 whitespace-nowrap' style={{ zIndex: 10000 }}>
-                                <a
-                                    href="tel:+998949876000"
-                                    className='flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200'
-                                >
-                                    <svg className='w-4 h-4 text-gray-600' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
-                                    </svg>
-                                    <p className='text-gray-700 font-medium'>
-                                        {t('phone')}
-                                    </p>
-                                </a>
-                            </div>
-                        )}
-                    </div>
-                </div>
+        <div
+          className="relative flex justify-between items-center"
+          style={{ zIndex: 10000 }}
+        >
+          {/* Logo */}
+          <Link href="/main">
+            <div className="logo_box">
+              <img
+                className="w-[80px] md:w-[108px]"
+                src="/logo.png"
+                alt="Logo"
+              />
             </div>
-        </nav>
-    )
+          </Link>
+
+          {/* Desktop Navigation - Centered Search */}
+          <div className="hidden md:flex items-center justify-center flex-1">
+            <div className="relative" ref={searchRef} style={{ zIndex: 10001 }}>
+              <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-[12px] w-[363px] px-4 py-3 shadow-lg border border-white/20 hover:bg-white/15 transition-all duration-200">
+                <svg
+                  className="w-5 h-5 text-white/70"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <input
+                  type="text"
+                  placeholder={t("searchPlaceholder")}
+                  className="bg-transparent outline-none text-white placeholder-white/60 flex-1 text-left text-base"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  onFocus={handleInputFocus}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleInputFocus();
+                  }}
+                  autoComplete="off"
+                  spellCheck="false"
+                />
+                {isLoading && (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white/50"></div>
+                )}
+              </div>
+              <SearchResults />
+            </div>
+          </div>
+
+          {/* Desktop Right Side - Language + Phone */}
+          <div className="hidden md:flex items-center gap-4">
+            {/* Language Selector - Desktop */}
+            <div className="relative" ref={langRef}>
+              <button
+                className="flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-lg px-3 py-2 border border-white/20 hover:bg-white/15 transition-all duration-200"
+                onClick={() => setIsLangOpen(!isLangOpen)}
+              >
+                <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-white/20">
+                  <img
+                    src={flagImages[currentLang] || flagImages.uz}
+                    alt={currentLangInfo.name}
+                    className="w-full h-full object-cover"
+                    onError={handleFlagImageError}
+                  />
+                  <span className="flag-text-fallback hidden text-xs font-bold text-white">
+                    {currentLang.toUpperCase()}
+                  </span>
+                </div>
+                <span className="text-white text-sm font-medium">
+                  {currentLangInfo.name}
+                </span>
+                <svg
+                  className={`w-4 h-4 text-white/70 transition-transform duration-200 ${
+                    isLangOpen ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {/* Language Dropdown - Desktop */}
+              {isLangOpen && (
+                <div
+                  className="lang-dropdown absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden min-w-[140px]"
+                  style={{ zIndex: 10000 }}
+                >
+                  {Object.values(languages).map((lang) => (
+                    <button
+                      key={lang.code}
+                      className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors duration-200 ${
+                        currentLang === lang.code
+                          ? "bg-blue-50 text-blue-700"
+                          : "text-gray-700"
+                      }`}
+                      onClick={() => handleLanguageChange(lang.code)}
+                    >
+                      <div className="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center bg-gray-100">
+                        <img
+                          src={flagImages[lang.code]}
+                          alt={lang.name}
+                          className="w-full h-full object-cover"
+                          onError={handleFlagImageError}
+                        />
+                        <span className="flag-text-fallback hidden text-xs font-bold text-gray-600">
+                          {lang.code.toUpperCase()}
+                        </span>
+                      </div>
+                      <span className="font-medium text-sm">{lang.name}</span>
+                      {currentLang === lang.code && (
+                        <svg
+                          className="w-4 h-4 text-blue-600 ml-auto"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Phone Number */}
+            <a
+              href="tel:+998983095550"
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity duration-200"
+            >
+              <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-5 h-5 text-white"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+              <p className="text-white font-medium text-lg">{t("phone")}</p>
+            </a>
+          </div>
+
+          {/* Mobile Icons */}
+          <div className="md:hidden flex items-center gap-3">
+            {/* Language Selector - Mobile */}
+            <div className="relative" ref={langRef}>
+              <button
+                className="bg-white/10 backdrop-blur-md p-2.5 rounded-lg border border-white/20 hover:bg-white/15 transition-all duration-200"
+                onClick={() => setIsLangOpen(!isLangOpen)}
+              >
+                <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-white/20">
+                  <img
+                    src={flagImages[currentLang] || flagImages.uz}
+                    alt={currentLangInfo.name}
+                    className="w-full h-full object-cover"
+                    onError={handleFlagImageError}
+                  />
+                  <span className="flag-text-fallback hidden text-xs font-bold text-white">
+                    {currentLang.toUpperCase()}
+                  </span>
+                </div>
+              </button>
+
+              {/* Mobile Language Dropdown */}
+              {isLangOpen && (
+                <div
+                  className="lang-dropdown absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden min-w-[120px]"
+                  style={{ zIndex: 10000 }}
+                >
+                  {Object.values(languages).map((lang) => (
+                    <button
+                      key={lang.code}
+                      className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors duration-200 ${
+                        currentLang === lang.code
+                          ? "bg-blue-50 text-blue-700"
+                          : "text-gray-700"
+                      }`}
+                      onClick={() => handleLanguageChange(lang.code)}
+                    >
+                      <div className="w-4 h-4 rounded-full overflow-hidden flex items-center justify-center bg-gray-100">
+                        <img
+                          src={flagImages[lang.code]}
+                          alt={lang.name}
+                          className="w-full h-full object-cover"
+                          onError={handleFlagImageError}
+                        />
+                        <span className="flag-text-fallback hidden text-xs font-bold text-gray-600">
+                          {lang.code.toUpperCase()}
+                        </span>
+                      </div>
+                      <span className="font-medium text-xs">{lang.name}</span>
+                      {currentLang === lang.code && (
+                        <svg
+                          className="w-3 h-3 text-blue-600 ml-auto"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Search Icon - Mobile */}
+            <div
+              className="relative"
+              ref={mobileSearchRef}
+              style={{ zIndex: 10001 }}
+            >
+              <button
+                className="bg-white/15 backdrop-blur-md p-3 rounded-full shadow-lg border border-white/25 hover:bg-white/20 transition-all duration-200"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsSearchOpen(!isSearchOpen);
+                }}
+              >
+                <svg
+                  className="w-5 h-5 text-white"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+
+              {/* Mobile Search Overlay */}
+              {isSearchOpen && (
+                <div
+                  className="fixed top-0 left-0 right-0 h-[100px] bg-black/30 backdrop-blur-[60px]"
+                  style={{ zIndex: 10000 }}
+                >
+                  <div className="flex justify-center items-center h-full px-4">
+                    <div
+                      className="relative w-full max-w-[343px]"
+                      style={{ zIndex: 10001 }}
+                    >
+                      <div className="flex items-center gap-3 bg-white/20 backdrop-blur-md rounded-[12px] px-4 py-3 shadow-lg border border-white/30 hover:bg-white/25 transition-all duration-200">
+                        <svg
+                          className="w-5 h-5 text-white/70"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <input
+                          type="text"
+                          placeholder={t("searchPlaceholderMobile")}
+                          className="bg-transparent outline-none text-white placeholder-white/60 flex-1 text-left text-base"
+                          value={searchQuery}
+                          onChange={handleSearchChange}
+                          onFocus={handleInputFocus}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleInputFocus();
+                          }}
+                          autoFocus
+                          autoComplete="off"
+                          spellCheck="false"
+                          style={{ zIndex: 10002 }}
+                        />
+                        {isLoading && (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white/50"></div>
+                        )}
+                        <button
+                          className="text-white/70 hover:text-white transition-colors duration-200"
+                          onClick={() => setIsSearchOpen(false)}
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+
+                      {/* Search Results for Mobile */}
+                      <SearchResults isMobile={true} />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Call Icon - Mobile */}
+            <div className="relative">
+              <button
+                className="bg-yellow-400/90 backdrop-blur-md p-3 rounded-full shadow-lg border border-yellow-300/30 hover:bg-yellow-400 transition-all duration-200"
+                onClick={() => setIsCallOpen(!isCallOpen)}
+              >
+                <svg
+                  className="w-5 h-5 text-white"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+
+              {/* Mobile Call Dropdown */}
+              {isCallOpen && (
+                <div
+                  className="absolute right-0 top-full mt-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl border border-white/30 p-4 whitespace-nowrap"
+                  style={{ zIndex: 10000 }}
+                >
+                  <a
+                    href="tel:+998983095550"
+                    className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200"
+                  >
+                    <svg
+                      className="w-4 h-4 text-gray-600"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <p className="text-gray-700 font-medium">{t("phone")}</p>
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
 }
 
 export default Navbar
