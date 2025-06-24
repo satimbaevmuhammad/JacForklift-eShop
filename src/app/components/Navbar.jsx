@@ -406,14 +406,34 @@ const Navbar = () => {
                     </div>
 
                     {/* Phone Number */}
-                    <a href="tel:+998983095550" className="flex items-center gap-3 hover:opacity-80 transition-opacity duration-200">
-                        <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
+                    <div className="relative">
+                        <button
+                            className="bg-yellow-400/90 backdrop-blur-md p-3 rounded-full shadow-lg border border-yellow-300/30 hover:bg-yellow-400 transition-all duration-200"
+                            onClick={() => setIsCallOpen(!isCallOpen)}
+                        >
                             <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                             </svg>
-                        </div>
-                        <p className="text-white font-medium text-lg">{t("phone")}</p>
-                    </a>
+                        </button>
+
+                        {/* Mobile Call Dropdown */}
+                        {isCallOpen && (
+                            <div className="absolute right-0 top-full mt-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl border border-white/30 p-4 whitespace-nowrap" style={{ zIndex: 10000 }}>
+                                <a href="https://t.me/+998983095550" className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200">
+                                    <svg className="w-4 h-4 text-gray-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                                    </svg>
+                                    <p className="text-gray-700 font-medium">{t("phone")}</p>
+                                </a>
+                                 <a href="https://t.me/+998949876000" className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200">
+                                    <svg className="w-4 h-4 text-gray-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                                    </svg>
+                                    <p className="text-gray-700 font-medium">+998949876000</p>
+                                </a>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Mobile Icons */}
@@ -546,6 +566,12 @@ const Navbar = () => {
                                         <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                                     </svg>
                                     <p className="text-gray-700 font-medium">{t("phone")}</p>
+                                </a>
+                                   <a href="tel:+998949876000" className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200">
+                                    <svg className="w-4 h-4 text-gray-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                                    </svg>
+                                    <p className="text-gray-700 font-medium">+998949876000</p>
                                 </a>
                             </div>
                         )}
