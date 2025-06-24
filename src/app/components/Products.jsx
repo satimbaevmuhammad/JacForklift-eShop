@@ -229,7 +229,7 @@ const Products = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div id="products" className="min-h-screen bg-gray-50">
       {/* Header - Mobile Optimized */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">

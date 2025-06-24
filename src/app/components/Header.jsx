@@ -39,12 +39,11 @@ const Header = () => {
                             <p className='text-white/90 text-lg leading-relaxed max-w-lg drop-shadow-md'>
                                 {t('heroDescription')}
                             </p>
-
-                            <Link href="/products">
+                            <a href="#products">
                                 <button className='bg-[#FABF26] hover:bg-yellow-500 text-black font-semibold px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105'>
                                     {t('products')}
                                 </button>
-                            </Link>
+                            </a>
                         </div>
 
                         {/* Right side - Equipment image area */}
@@ -63,11 +62,11 @@ const Header = () => {
                             {t('heroDescription')}
                         </p>
 
-                        <Link href="/products">
+                        <a href="#products">
                             <button className='bg-[#FABF26] hover:bg-yellow-500 text-black font-semibold px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl w-full max-w-xs mx-4'>
                                 {t('products')}
                             </button>
-                        </Link>
+                        </a>
                     </div>
                 </div>
             </div>
