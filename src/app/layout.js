@@ -20,9 +20,9 @@ export const metadata = {
   alternates: {
     canonical: 'https://jacforklift.uz',
     languages: {
-      'uz': 'https://jacforklift.uz',
-      'ru': 'https://jacforklift.uz/ru',
-      'en': 'https://jacforklift.uz/en'
+      'uz': 'https://jacforklift.uz/?lang=uz',
+      'ru': 'https://jacforklift.uz/?lang=ru',
+      'en': 'https://jacforklift.uz/?lang=en'
     }
   },
   openGraph: {
