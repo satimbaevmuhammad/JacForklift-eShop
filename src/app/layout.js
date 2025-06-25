@@ -59,7 +59,7 @@ export const metadata = {
     },
   },
   verification: {
-    google: 'google-site-verification=9k2tDlaLTD-3vjKRtXxfN88Z7K0nsh-XLaf1ZJwD_dc',
+    google: '9k2tDlaLTD-3vjKRtXxfN88Z7K0nsh-XLaf1ZJwD_dc',
     yandex: 'haqiqiy-yandex-verification-code',
   },
 }
@@ -68,6 +68,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="uz">
       <head>
+        {/* Google Search Console verification */}
+        <meta name="google-site-verification" content="9k2tDlaLTD-3vjKRtXxfN88Z7K0nsh-XLaf1ZJwD_dc" />
+        
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#1a365d" />
         <meta name="geo.region" content="UZ" />
