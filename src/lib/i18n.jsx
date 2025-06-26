@@ -161,7 +161,7 @@ const resources = {
     ru: {
         translation: {
             // Kategoriyalar
-            "Dizelli transportlar": "Дизельные транспортные средства",
+            "Dizelli transportlar": "Дизельный вилочный погрузчик",
             "Elektri transportlar": "Электрические транспортные средства",
             "Benzinli transportlar": "Бензиновые транспортные средства",
             "LPG transportlari": "Транспорт на LPG",

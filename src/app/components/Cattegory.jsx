@@ -34,58 +34,58 @@ const Categories = () => {
         const categoryMapping = {
             // Diesel kategoriyalari
             'diesel': {
-                'uz': 'Dizelli transportlar',
+                'uz': 'Dizel forklift',
                 'en': 'Diesel Vehicles',
-                'ru': 'Дизельные транспортные средства'
+                'ru': 'Дизельный вилочный погрузчик'
             },
             'Diesel': {
-                'uz': 'Dizelli transportlar',
+                'uz': 'Dizel forklift',
                 'en': 'Diesel Vehicles',
-                'ru': 'Дизельные транспортные средства'
+                'ru': 'Дизельный вилочный погрузчик'
             },
             // Electric kategoriyalari
             'Electric': {
-                'uz': 'Elektri transportlar',
+                'uz': 'Elektr forklift',
                 'en': 'Electric Vehicles',
-                'ru': 'Электрические транспортные средства'
+                'ru': 'Электрический  вилочный погрузчик'
             },
             'electric': {
-                'uz': 'Elektri transportlar',
+                'uz': 'Elektr forklift',
                 'en': 'Electric Vehicles',
-                'ru': 'Электрические транспортные средства'
+                'ru': 'Электрический  вилочный погрузчик'
             },
             // Petrol kategoriyalari
             'Petrol': {
-                'uz': 'Benzinli transportlar',
+                'uz': 'Benzinli forklift',
                 'en': 'Petrol Vehicles',
-                'ru': 'Бензиновые транспортные средства'
+                'ru': 'Бензинный вилочный погрузчик'
             },
             'petrol': {
-                'uz': 'Benzinli transportlar',
+                'uz': 'Benzinli forklift',
                 'en': 'Petrol Vehicles',
-                'ru': 'Бензиновые транспортные средства'
+                'ru': 'Бензинный вилочный погрузчик'
             },
             // LPG kategoriyalari
             'lpg': {
-                'uz': 'LPG transportlari',
+                'uz': 'Elektr traktor',
                 'en': 'LPG Vehicles',
-                'ru': 'Транспорт на LPG'
+                'ru': 'Электрический трактор'
             },
             'LPG': {
                 'uz': 'LPG transportlari',
                 'en': 'LPG Vehicles',
-                'ru': 'Транспорт на LPG'
+                'ru': 'Электрический трактор'
             },
             // Electric pallet
             'electric pallet': {
                 'uz': 'Elektr pallet yuk mashinasi',
                 'en': 'Electric Pallet Trucks',
-                'ru': 'Электрические паллетные погрузчики'
+                'ru': 'Электрический транспалет(рохля)'
             },
             'Electric pallet': {
                 'uz': 'Elektr pallet yuk mashinasi',
                 'en': 'Electric Pallet Trucks',
-                'ru': 'Электрические паллетные погрузчики'
+                'ru': 'Электрический транспалет(рохля)'
             },
             // Pallet stacker
             'PALLET STACKER': {
@@ -132,14 +132,14 @@ const Categories = () => {
             },
             // Spare parts
             'spare': {
-                'uz': 'Texnika extiyot qismlari',
+                'uz': 'Forklift extiyot qismlari',
                 'en': 'Machinery Spare Parts',
-                'ru': 'Запчасти для техники'
+                'ru': 'Запчасти для вилочных погрузчик'
             },
             'spare parts': {
-                'uz': 'Texnika extiyot qismlari',
+                'uz': 'Forklift extiyot qismlari',
                 'en': 'Machinery Spare Parts',
-                'ru': 'Запчасти для техники'
+                'ru': 'Запчасти для вилочных погрузчик'
             },
             'Texnika extiyot qismlarin': {
                 'uz': 'Texnika extiyot qismlari',
@@ -203,7 +203,7 @@ const Categories = () => {
             {
                 id: 104,
                 key: "lpg",
-                image: "/stacker.png"
+                image: "https://api.jacforklift.uz/media/forklift_images/36774cf535b22fa6d59c40eeaa_MHeMrPX.png4e_500w_500h.src_95Q.webp"
             },
             {
                 id: 105,
