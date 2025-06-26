@@ -34,35 +34,35 @@ const Categories = () => {
       const categoryMapping = {
         // Diesel kategoriyalari
         diesel: {
-          uz: "Dizel forklift",
-          en: "Diesel Vehicles",
+          uz: "Dizel vilkali yuklagich",
+          en: "Diesel Forcklifts",
           ru: "Дизельный вилочный погрузчик",
         },
         Diesel: {
-          uz: "Dizel forklift",
-          en: "Diesel Vehicles",
+          uz: "Dizel vilkali yuklagich",
+          en: "Diesel Forklifts",
           ru: "Дизельный вилочный погрузчик",
         },
         // Electric kategoriyalari
         Electric: {
-          uz: "Elektr forklift",
-          en: "Electric Vehicles",
+          uz: "Elektr vilkali yuklagich",
+          en: "Electric Forcklifts",
           ru: "Электрический  вилочный погрузчик",
         },
         electric: {
-          uz: "Elektr forklift",
-          en: "Electric Vehicles",
+          uz: "Elektr vilkali yuklagich",
+          en: "Electric Forklifts",
           ru: "Электрический  вилочный погрузчик",
         },
         // Petrol kategoriyalari
         Petrol: {
-          uz: "Benzinli forklift",
-          en: "Petrol Vehicles",
+          uz: "Gazobenzinli vilkali yuklagich",
+          en: "Lpg forcklifts",
           ru: "Газобензиновый  вилочный погрузчик",
         },
         petrol: {
-          uz: "Benzinli forklift",
-          en: "Petrol Vehicles",
+          uz: "Gazobenzinli vilkali yuklagich",
+          en: "Lpg forcklifts",
           ru: "Газобензиновый  вилочный погрузчик",
         },
         // LPG kategoriyalari
@@ -89,7 +89,7 @@ const Categories = () => {
         },
         // Pallet stacker
         "PALLET STACKER": {
-          uz: "Elektr stacker mashinaslari",
+          uz: "Elektr shtabilyor",
           en: "Electric Stackers",
           ru: "Электрические штабелеры",
         },
@@ -116,8 +116,8 @@ const Categories = () => {
         },
         // Handle pallets
         "Handle Pallets": {
-          uz: "Tutqich, qo'l bilan boshqarish",
-          en: "Manual Pallet Trucks",
+          uz: "Transpallet",
+          en: "Hand Pallet truck",
           ru: "Ручные паллетные тележки",
         },
         "handle pallets": {
@@ -132,8 +132,8 @@ const Categories = () => {
         },
         // Spare parts
         spare: {
-          uz: "Forklift extiyot qismlari",
-          en: "Machinery Spare Parts",
+          uz: "Vilkali yuklagich extiyot qismlari",
+          en: "Forklifts Spare Parts",
           ru: "Запчасти для вилочных погрузчик",
         },
         "spare parts": {
