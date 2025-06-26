@@ -89,7 +89,7 @@ const Categories = () => {
         },
         // Pallet stacker
         "PALLET STACKER": {
-          uz: "Elektr shtabilyor",
+          uz: "Elektr shtambilyo'r",
           en: "Electric Stackers",
           ru: "Электрические штабелеры",
         },
