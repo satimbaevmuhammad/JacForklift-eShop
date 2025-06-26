@@ -162,14 +162,14 @@ const resources = {
         translation: {
             // Kategoriyalar
             "Dizelli transportlar": "Дизельный вилочный погрузчик",
-            "Elektri transportlar": "Электрические транспортные средства",
-            "Benzinli transportlar": "Бензиновые транспортные средства",
-            "LPG transportlari": "Транспорт на LPG",
+            "Elektri transportlar": "Электрические вилочный погрузчик",
+            "Benzinli transportlar": "Газобензиновый вилочный погрузчик",
+            "LPG transportlari": "Электрический трактор",
             "Elektr pallet yuk mashinasi": "Электрические паллетные погрузчики",
             "Elektr stacker mashinaslari": "Электрические штабелеры",
             "Reach truck forklift": "Ричтрак погрузчики",
             "Handle pallet forklift": "Ручные паллетные тележки",
-            "Texnika extiyot qismlarin": "Запчасти для техники",
+            "Texnika extiyot qismlarin": "Запчасти для вилочных погрузчик",
 
             // Asosiy
             "categories": "Категории",

@@ -31,212 +31,215 @@ const Categories = () => {
 
     // Kategoriya key va nomlarini mapping qilish - har til uchun
     const getCategoryMapping = () => {
-        const categoryMapping = {
-            // Diesel kategoriyalari
-            'diesel': {
-                'uz': 'Dizel forklift',
-                'en': 'Diesel Vehicles',
-                'ru': 'Дизельный вилочный погрузчик'
-            },
-            'Diesel': {
-                'uz': 'Dizel forklift',
-                'en': 'Diesel Vehicles',
-                'ru': 'Дизельный вилочный погрузчик'
-            },
-            // Electric kategoriyalari
-            'Electric': {
-                'uz': 'Elektr forklift',
-                'en': 'Electric Vehicles',
-                'ru': 'Электрический  вилочный погрузчик'
-            },
-            'electric': {
-                'uz': 'Elektr forklift',
-                'en': 'Electric Vehicles',
-                'ru': 'Электрический  вилочный погрузчик'
-            },
-            // Petrol kategoriyalari
-            'Petrol': {
-                'uz': 'Benzinli forklift',
-                'en': 'Petrol Vehicles',
-                'ru': 'Бензинный вилочный погрузчик'
-            },
-            'petrol': {
-                'uz': 'Benzinli forklift',
-                'en': 'Petrol Vehicles',
-                'ru': 'Бензинный вилочный погрузчик'
-            },
-            // LPG kategoriyalari
-            'lpg': {
-                'uz': 'Elektr traktor',
-                'en': 'LPG Vehicles',
-                'ru': 'Электрический трактор'
-            },
-            'LPG': {
-                'uz': 'LPG transportlari',
-                'en': 'LPG Vehicles',
-                'ru': 'Электрический трактор'
-            },
-            // Electric pallet
-            'electric pallet': {
-                'uz': 'Elektr pallet yuk mashinasi',
-                'en': 'Electric Pallet Trucks',
-                'ru': 'Электрический транспалет(рохля)'
-            },
-            'Electric pallet': {
-                'uz': 'Elektr pallet yuk mashinasi',
-                'en': 'Electric Pallet Trucks',
-                'ru': 'Электрический транспалет(рохля)'
-            },
-            // Pallet stacker
-            'PALLET STACKER': {
-                'uz': 'Elektr stacker mashinaslari',
-                'en': 'Electric Stackers',
-                'ru': 'Электрические штабелеры'
-            },
-            'pallet stacker': {
-                'uz': 'Elektr stacker mashinaslari',
-                'en': 'Electric Stackers',
-                'ru': 'Электрические штабелеры'
-            },
-            // Reach truck
-            'REACH TRUCK': {
-                'uz': 'Ichkariga cho\'zilib ishlaydigan forklift',
-                'en': 'Reach Truck Forklifts',
-                'ru': 'Ричтрак погрузчики'
-            },
-            'reach truck': {
-                'uz': 'Ichkariga cho\'zilib ishlaydigan forklift',
-                'en': 'Reach Truck Forklifts',
-                'ru': 'Ричтрак погрузчики'
-            },
-            'Reach truck forklift': {
-                'uz': 'Ichkariga cho\'zilib ishlaydigan forklift',
-                'en': 'Reach Truck Forklifts',
-                'ru': 'Ричтрак погрузчики'
-            },
-            // Handle pallets
-            'Handle Pallets': {
-                'uz': 'Tutqich, qo\'l bilan boshqarish',
-                'en': 'Manual Pallet Trucks',
-                'ru': 'Ручные паллетные тележки'
-            },
-            'handle pallets': {
-                'uz': 'Tutqich, qo\'l bilan boshqarish',
-                'en': 'Manual Pallet Trucks',
-                'ru': 'Ручные паллетные тележки'
-            },
-            'Handle pallet forklift': {
-                'uz': 'Tutqich, qo\'l bilan boshqarish',
-                'en': 'Manual Pallet Trucks',
-                'ru': 'Ручные паллетные тележки'
-            },
-            // Spare parts
-            'spare': {
-                'uz': 'Forklift extiyot qismlari',
-                'en': 'Machinery Spare Parts',
-                'ru': 'Запчасти для вилочных погрузчик'
-            },
-            'spare parts': {
-                'uz': 'Forklift extiyot qismlari',
-                'en': 'Machinery Spare Parts',
-                'ru': 'Запчасти для вилочных погрузчик'
-            },
-            'Texnika extiyot qismlarin': {
-                'uz': 'Texnika extiyot qismlari',
-                'en': 'Machinery Spare Parts',
-                'ru': 'Запчасти для техники'
-            }
-        }
+      const categoryMapping = {
+        // Diesel kategoriyalari
+        diesel: {
+          uz: "Dizel forklift",
+          en: "Diesel Vehicles",
+          ru: "Дизельный вилочный погрузчик",
+        },
+        Diesel: {
+          uz: "Dizel forklift",
+          en: "Diesel Vehicles",
+          ru: "Дизельный вилочный погрузчик",
+        },
+        // Electric kategoriyalari
+        Electric: {
+          uz: "Elektr forklift",
+          en: "Electric Vehicles",
+          ru: "Электрический  вилочный погрузчик",
+        },
+        electric: {
+          uz: "Elektr forklift",
+          en: "Electric Vehicles",
+          ru: "Электрический  вилочный погрузчик",
+        },
+        // Petrol kategoriyalari
+        Petrol: {
+          uz: "Benzinli forklift",
+          en: "Petrol Vehicles",
+          ru: "Газобензиновый  вилочный погрузчик",
+        },
+        petrol: {
+          uz: "Benzinli forklift",
+          en: "Petrol Vehicles",
+          ru: "Газобензиновый  вилочный погрузчик",
+        },
+        // LPG kategoriyalari
+        lpg: {
+          uz: "Elektr traktor",
+          en: "LPG Vehicles",
+          ru: "Электрический трактор",
+        },
+        LPG: {
+          uz: "LPG transportlari",
+          en: "LPG Vehicles",
+          ru: "Электрический трактор",
+        },
+        // Electric pallet
+        "electric pallet": {
+          uz: "Elektr pallet yuk mashinasi",
+          en: "Electric Pallet Trucks",
+          ru: "Электрический транспалет(рохля)",
+        },
+        "Electric pallet": {
+          uz: "Elektr pallet yuk mashinasi",
+          en: "Electric Pallet Trucks",
+          ru: "Электрический транспалет(рохля)",
+        },
+        // Pallet stacker
+        "PALLET STACKER": {
+          uz: "Elektr stacker mashinaslari",
+          en: "Electric Stackers",
+          ru: "Электрические штабелеры",
+        },
+        "pallet stacker": {
+          uz: "Elektr stacker mashinaslari",
+          en: "Electric Stackers",
+          ru: "Электрические штабелеры",
+        },
+        // Reach truck
+        "REACH TRUCK": {
+          uz: "Ichkariga cho'zilib ishlaydigan forklift",
+          en: "Reach Truck Forklifts",
+          ru: "Ричтрак погрузчики",
+        },
+        "reach truck": {
+          uz: "Ichkariga cho'zilib ishlaydigan forklift",
+          en: "Reach Truck Forklifts",
+          ru: "Ричтрак погрузчики",
+        },
+        "Reach truck forklift": {
+          uz: "Ichkariga cho'zilib ishlaydigan forklift",
+          en: "Reach Truck Forklifts",
+          ru: "Ричтрак погрузчики",
+        },
+        // Handle pallets
+        "Handle Pallets": {
+          uz: "Tutqich, qo'l bilan boshqarish",
+          en: "Manual Pallet Trucks",
+          ru: "Ручные паллетные тележки",
+        },
+        "handle pallets": {
+          uz: "Tutqich, qo'l bilan boshqarish",
+          en: "Manual Pallet Trucks",
+          ru: "Ручные паллетные тележки",
+        },
+        "Handle pallet forklift": {
+          uz: "Tutqich, qo'l bilan boshqarish",
+          en: "Manual Pallet Trucks",
+          ru: "Ручные паллетные тележки",
+        },
+        // Spare parts
+        spare: {
+          uz: "Forklift extiyot qismlari",
+          en: "Machinery Spare Parts",
+          ru: "Запчасти для вилочных погрузчик",
+        },
+        "spare parts": {
+          uz: "Forklift extiyot qismlari",
+          en: "Machinery Spare Parts",
+          ru: "Запчасти для вилочных погрузчик",
+        },
+        "Texnika extiyot qismlarin": {
+          uz: "Texnika extiyot qismlari",
+          en: "Machinery Spare Parts",
+          ru: "Запчасти для техники",
+        },
+      };
 
-        return categoryMapping
-    }
+      return categoryMapping;
+    };
 
     // Key yoki nom bo'yicha to'g'ri kategoriya nomini topish
     const getCorrectCategoryName = (key, originalName) => {
-        const mapping = getCategoryMapping()
+      const mapping = getCategoryMapping();
 
-        // Avval key bo'yicha qidirish
-        if (mapping[key] && mapping[key][currentLang]) {
-            return mapping[key][currentLang]
+      // Avval key bo'yicha qidirish
+      if (mapping[key] && mapping[key][currentLang]) {
+        return mapping[key][currentLang];
+      }
+
+      // Agar key topilmasa, originalName bo'yicha qidirish
+      if (mapping[originalName] && mapping[originalName][currentLang]) {
+        return mapping[originalName][currentLang];
+      }
+
+      // Key va originalName ni kichik harfda qidirish
+      const lowerKey = key?.toLowerCase();
+      const lowerName = originalName?.toLowerCase();
+
+      for (const [mappingKey, translations] of Object.entries(mapping)) {
+        if (
+          mappingKey.toLowerCase() === lowerKey ||
+          mappingKey.toLowerCase() === lowerName ||
+          mappingKey.toLowerCase().includes(lowerKey) ||
+          lowerKey?.includes(mappingKey.toLowerCase())
+        ) {
+          return translations[currentLang] || originalName;
         }
+      }
 
-        // Agar key topilmasa, originalName bo'yicha qidirish
-        if (mapping[originalName] && mapping[originalName][currentLang]) {
-            return mapping[originalName][currentLang]
-        }
-
-        // Key va originalName ni kichik harfda qidirish
-        const lowerKey = key?.toLowerCase()
-        const lowerName = originalName?.toLowerCase()
-
-        for (const [mappingKey, translations] of Object.entries(mapping)) {
-            if (mappingKey.toLowerCase() === lowerKey ||
-                mappingKey.toLowerCase() === lowerName ||
-                mappingKey.toLowerCase().includes(lowerKey) ||
-                lowerKey?.includes(mappingKey.toLowerCase())) {
-                return translations[currentLang] || originalName
-            }
-        }
-
-        // Agar hech narsa topilmasa, originalName qaytarish
-        return originalName
-    }
+      // Agar hech narsa topilmasa, originalName qaytarish
+      return originalName;
+    };
 
     // Static kategoriyalar ro'yxati
     const getStaticCategories = () => {
-        const staticCategories = [
-            {
-                id: 101,
-                key: "diesel",
-                image: "/traktr.png"
-            },
-            {
-                id: 102,
-                key: "Electric",
-                image: "/orn.png"
-            },
-            {
-                id: 103,
-                key: "Petrol",
-                image: "/orn.png"
-            },
-            {
-                id: 104,
-                key: "lpg",
-                image: "https://api.jacforklift.uz/media/forklift_images/36774cf535b22fa6d59c40eeaa_MHeMrPX.png4e_500w_500h.src_95Q.webp"
-            },
-            {
-                id: 105,
-                key: "electric pallet",
-                image: "/pall.png"
-            },
-            {
-                id: 106,
-                key: "PALLET STACKER",
-                image: "/stacker.png"
-            },
-            {
-                id: 107,
-                key: "REACH TRUCK",
-                image: "/reach-truck.png"
-            },
-            {
-                id: 108,
-                key: "Handle Pallets",
-                image: "/handle-pallet.png"
-            },
-            {
-                id: 109,
-                key: "spare",
-                image: "/spare-parts.png"
-            }
-        ]
+      const staticCategories = [
+        {
+          id: 101,
+          key: "diesel",
+          image: "/traktr.png",
+        },
+        {
+          id: 102,
+          key: "Electric",
+          image: "/ev.png",
+        },
+        {
+          id: 103,
+          key: "Petrol",
+          image: "/gaz.png",
+        },
+        {
+          id: 104,
+          key: "lpg",
+          image:
+            "https://api.jacforklift.uz/media/forklift_images/36774cf535b22fa6d59c40eeaa_MHeMrPX.png4e_500w_500h.src_95Q.webp",
+        },
+        {
+          id: 105,
+          key: "electric pallet",
+          image: "/pall.png",
+        },
+        {
+          id: 106,
+          key: "PALLET STACKER",
+          image: "/stacker.png",
+        },
+        {
+          id: 107,
+          key: "REACH TRUCK",
+          image: "/reach-truck.png",
+        },
+        {
+          id: 108,
+          key: "Handle Pallets",
+          image: "/handle-pallet.png",
+        },
+        {
+          id: 109,
+          key: "spare",
+          image: "/spare-parts.png",
+        },
+      ];
 
-        return staticCategories.map(cat => ({
-            ...cat,
-            name: getCorrectCategoryName(cat.key, cat.key)
-        }))
-    }
+      return staticCategories.map((cat) => ({
+        ...cat,
+        name: getCorrectCategoryName(cat.key, cat.key),
+      }));
+    };
 
     // Rasm yo'lini tekshirish va to'g'rilash funksiyasi
     const getImagePath = (imagePath) => {
