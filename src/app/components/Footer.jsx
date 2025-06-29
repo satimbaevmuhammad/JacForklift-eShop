@@ -18,7 +18,7 @@ const Footer = () => {
                     {/* Center: Copyright */}
                     <div className='text-center'>
                         <p className='text-gray-300 text-sm'>
-                            {t('footer.copyright') || 'JAC Forklift © 2024. Barcha huquqlar himoyalangan'}
+                            {'JAC Forklift © 2025 Barcha huquqlar himoyalangan'}
                         </p>
                     </div>
 
@@ -33,7 +33,7 @@ const Footer = () => {
                                 <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                             </svg>
                             <span className='text-sm font-medium'>
-                                {t('phone') || '+998 94 987 60 00'}
+                                {'+998 94 987 60 00'}
                             </span>
                         </a>
 
@@ -41,7 +41,7 @@ const Footer = () => {
                         <div className='flex items-center gap-3'>
                             {/* Telegram */}
                             <a
-                                href="https://t.me/jacforklift"
+                                href="https://t.me/+998949876000"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className='text-gray-400 hover:text-blue-400 transition-colors duration-200'
@@ -54,7 +54,7 @@ const Footer = () => {
 
                             {/* Instagram */}
                             <a
-                                href="https://instagram.com/jacforklift"
+                                href="https://instagram.com/jacforklift.uz"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className='text-gray-400 hover:text-pink-400 transition-colors duration-200'
@@ -66,21 +66,11 @@ const Footer = () => {
                             </a>
 
                             {/* YouTube */}
-                            <a
-                                href="https://youtube.com/@jacforklift"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className='text-gray-400 hover:text-red-500 transition-colors duration-200'
-                                aria-label={t('footer.social.youtube') || 'YouTube'}
-                            >
-                                <svg className='w-6 h-6' fill='currentColor' viewBox='0 0 24 24'>
-                                    <path d='M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z' />
-                                </svg>
-                            </a>
+                         
 
                             {/* Facebook */}
                             <a
-                                href="https://facebook.com/jacforklift"
+                                href="https://facebook.com/jacforklift.uz"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className='text-gray-400 hover:text-blue-600 transition-colors duration-200'
@@ -121,7 +111,7 @@ const Footer = () => {
                     <div className='flex justify-center items-center gap-4'>
                         {/* Telegram */}
                         <a
-                            href="https://t.me/jacforklift"
+                            href="https://t.me/+998949876000"
                             target="_blank"
                             rel="noopener noreferrer"
                             className='text-gray-400 hover:text-blue-400 transition-colors duration-200'
@@ -134,7 +124,7 @@ const Footer = () => {
 
                         {/* Instagram */}
                         <a
-                            href="https://instagram.com/jacforklift"
+                            href="https://instagram.com/jacforklift.uz"
                             target="_blank"
                             rel="noopener noreferrer"
                             className='text-gray-400 hover:text-pink-400 transition-colors duration-200'
@@ -145,22 +135,11 @@ const Footer = () => {
                             </svg>
                         </a>
 
-                        {/* YouTube */}
-                        <a
-                            href="https://youtube.com/@jacforklift"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className='text-gray-400 hover:text-red-500 transition-colors duration-200'
-                            aria-label={t('footer.social.youtube') || 'YouTube'}
-                        >
-                            <svg className='w-6 h-6' fill='currentColor' viewBox='0 0 24 24'>
-                                <path d='M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z' />
-                            </svg>
-                        </a>
+          
 
                         {/* Facebook */}
                         <a
-                            href="https://facebook.com/jacforklift"
+                            href="https://facebook.com/jacforklift.uz"
                             target="_blank"
                             rel="noopener noreferrer"
                             className='text-gray-400 hover:text-blue-600 transition-colors duration-200'
@@ -175,7 +154,7 @@ const Footer = () => {
                     {/* Copyright */}
                     <div className='text-center'>
                         <p className='text-gray-300 text-sm'>
-                            {t('footer.copyright') || 'JAC Forklift © 2024. Barcha huquqlar himoyalangan'}
+                            {'JAC Forklift © 2025. Barcha huquqlar himoyalangan'}
                         </p>
                     </div>
                 </div>
