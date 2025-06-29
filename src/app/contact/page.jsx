@@ -149,7 +149,7 @@ const page = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-20">
       {/* Header Section */}
       <div className="bg-white py-8 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4">
@@ -193,7 +193,26 @@ const page = () => {
                   <p>{getText('address.street')}</p>
                 </div>
                 <button
-                  onClick={() => window.open('https://taxi.yandex.uz/route/?rtext=~41.238181818299225,69.27453503862179', '_blank')}
+                  onClick={() => {
+                    // Avval Yandex Taxi ilovasini ochishga urinish
+                    const appUrl = 'yandextaxi://build_route_on_map?end-lat=41.238181818299225&end-lon=69.27453503862179&appmetrica_tracking_id=1178268795219780156';
+                    const webUrl = 'https://taxi.yandex.uz/route/?rtext=~41.238181818299225,69.27453503862179';
+                    
+                    // Mobile ilova mavjudligini tekshirish
+                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                    
+                    if (isMobile) {
+                      // Mobile da avval ilovani ochishga urinish
+                      window.location.href = appUrl;
+                      // Agar ilova ochilmasa, 2 soniyadan keyin web versiyani ochish
+                      setTimeout(() => {
+                        window.open(webUrl, '_blank');
+                      }, 2000);
+                    } else {
+                      // Desktop da to'g'ridan-to'g'ri web versiyani ochish
+                      window.open(webUrl, '_blank');
+                    }
+                  }}
                   className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 font-semibold text-sm"
                 >
                   {getText('address.orderTaxi')}
