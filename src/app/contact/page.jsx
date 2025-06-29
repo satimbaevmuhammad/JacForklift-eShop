@@ -3,7 +3,7 @@ import React from 'react';
 import { MapPin, Phone, Mail, MessageCircle, Instagram, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const page = () => {
+const ContactPage = () => {
   const { t, i18n } = useTranslation();
   
   // Built-in translations
@@ -192,34 +192,95 @@ const page = () => {
                   <p>{getText('address.district')}</p>
                   <p>{getText('address.street')}</p>
                 </div>
-                <button
-                  onClick={() => {
-                    // Avval Yandex Taxi ilovasini ochishga urinish
-                    const appUrl = 'yandextaxi://build_route_on_map?end-lat=41.238181818299225&end-lon=69.27453503862179&appmetrica_tracking_id=1178268795219780156';
-                    const webUrl = 'https://taxi.yandex.uz/route/?rtext=~41.238181818299225,69.27453503862179';
-                    
-                    // Mobile ilova mavjudligini tekshirish
-                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                    
-                    if (isMobile) {
-                      // Mobile da avval ilovani ochishga urinish
-                      window.location.href = appUrl;
-                      // Agar ilova ochilmasa, 2 soniyadan keyin web versiyani ochish
-                      setTimeout(() => {
-                        window.open(webUrl, '_blank');
-                      }, 2000);
-                    } else {
-                      // Desktop da to'g'ridan-to'g'ri web versiyani ochish
-                      window.open(webUrl, '_blank');
-                    }
-                  }}
-                  className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 font-semibold text-sm"
-                >
-                  {getText('address.orderTaxi')}
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </button>
+                <div className="space-y-3">
+                  {/* Yandex Taxi */}
+                  <button
+                    onClick={() => {
+                      const address = "Toshkent, Sergeli tumani, Kipchak 56 kesishmasi";
+                      const coordinates = "41.238181818299225,69.27453503862179";
+                      
+                      // Mobile uchun deep link
+                      const yandexApp = `yandextaxi://external?service=taxi&end-address=${encodeURIComponent(address)}&end-lat=41.238181818299225&end-lon=69.27453503862179`;
+                      // Web uchun URL
+                      const yandexWeb = `https://taxi.yandex.uz/?rtext=~${coordinates}`;
+                      
+                      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                      
+                      if (isMobile) {
+                        window.location.href = yandexApp;
+                        setTimeout(() => {
+                          window.open(yandexWeb, '_blank');
+                        }, 1500);
+                      } else {
+                        window.open(yandexWeb, '_blank');
+                      }
+                    }}
+                    className="w-full inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 font-semibold text-sm bg-orange-50 hover:bg-orange-100 px-3 py-2 rounded-lg transition-colors"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    Yandex Taxi
+                  </button>
+                  
+                  {/* MyTaxi (UzbekTaxi) */}
+                  <button
+                    onClick={() => {
+                      const address = "Toshkent, Sergeli tumani, Kipchak 56 kesishmasi";
+                      // MyTaxi deep link
+                      const myTaxiApp = `mytaxi://order?destination=${encodeURIComponent(address)}&destination_lat=41.238181818299225&destination_lng=69.27453503862179`;
+                      window.location.href = myTaxiApp;
+                    }}
+                    className="w-full inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-colors"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    MyTaxi
+                  </button>
+                  
+                  {/* Bolt */}
+                  <button
+                    onClick={() => {
+                      const boltApp = `bolt://setPickup?end_lat=41.238181818299225&end_lng=69.27453503862179&end_address=${encodeURIComponent("Toshkent, Sergeli tumani, Kipchak 56 kesishmasi")}`;
+                      window.location.href = boltApp;
+                    }}
+                    className="w-full inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-semibold text-sm bg-green-50 hover:bg-green-100 px-3 py-2 rounded-lg transition-colors"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    Bolt
+                  </button>
+                  
+                  {/* Maps fallback */}
+                  <button
+                    onClick={() => {
+                      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                      const coordinates = "41.238181818299225,69.27453503862179";
+                      
+                      if (isMobile) {
+                        // Android uchun Google Maps
+                        if (/Android/i.test(navigator.userAgent)) {
+                          window.location.href = `google.navigation:q=${coordinates}`;
+                        } 
+                        // iOS uchun Apple Maps
+                        else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                          window.location.href = `maps://maps.apple.com/?daddr=${coordinates}`;
+                        }
+                      } else {
+                        // Desktop uchun Google Maps
+                        window.open(`https://www.google.com/maps/dir//${coordinates}`, '_blank');
+                      }
+                    }}
+                    className="w-full inline-flex items-center gap-2 text-gray-600 hover:text-gray-700 font-semibold text-sm bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    {currentLang === 'uz' ? 'Xaritada ko\'rish' : currentLang === 'ru' ? 'Показать на карте' : 'Show on Map'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -390,4 +451,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default ContactPage;
