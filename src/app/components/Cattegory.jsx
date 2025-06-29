@@ -35,61 +35,61 @@ const Categories = () => {
         // Diesel kategoriyalari
         diesel: {
           uz: "Dizel vilkali yuklagich",
-          en: "Diesel Forcklifts",
-          ru: "Дизельный вилочный погрузчик",
+          en: "Diesel Forklifts",
+          ru: "Дизельные погрузчики",
         },
         Diesel: {
           uz: "Dizel vilkali yuklagich",
           en: "Diesel Forklifts",
-          ru: "Дизельный вилочный погрузчик",
+          ru: "Дизельные погрузчики",
         },
         // Electric kategoriyalari
         Electric: {
-          uz: "Elektr vilkali yuklagich",
-          en: "Electric Forcklifts",
-          ru: "Электрический  вилочный погрузчик",
+          uz: "Elektri transportlar",
+          en: "Electric Forklifts",
+          ru: "Электрические погрузчики",
         },
         electric: {
-          uz: "Elektr vilkali yuklagich",
+          uz: "Elektri transportlar",
           en: "Electric Forklifts",
-          ru: "Электрический  вилочный погрузчик",
+          ru: "Электрические погрузчики",
         },
         // Petrol kategoriyalari
         Petrol: {
-          uz: "Gazobenzinli vilkali yuklagich",
-          en: "Lpg forcklifts",
-          ru: "Газобензиновый  вилочный погрузчик",
+          uz: "Benzinli transportlar",
+          en: "Petrol Forklifts",
+          ru: "Бензиновые погрузчики",
         },
         petrol: {
-          uz: "Gazobenzinli vilkali yuklagich",
-          en: "Lpg forcklifts",
-          ru: "Газобензиновый  вилочный погрузчик",
+          uz: "Benzinli transportlar",
+          en: "Petrol Forklifts",
+          ru: "Бензиновые погрузчики",
         },
         // LPG kategoriyalari
         lpg: {
-          uz: "Elektr traktor",
+          uz: "LPG transportlari",
           en: "LPG Vehicles",
-          ru: "Электрический трактор",
+          ru: "LPG транспорт",
         },
         LPG: {
           uz: "LPG transportlari",
           en: "LPG Vehicles",
-          ru: "Электрический трактор",
+          ru: "LPG транспорт",
         },
         // Electric pallet
         "electric pallet": {
           uz: "Elektr pallet yuk mashinasi",
           en: "Electric Pallet Trucks",
-          ru: "Электрический транспалет(рохля)",
+          ru: "Электрические тележки",
         },
         "Electric pallet": {
           uz: "Elektr pallet yuk mashinasi",
           en: "Electric Pallet Trucks",
-          ru: "Электрический транспалет(рохля)",
+          ru: "Электрические тележки",
         },
         // Pallet stacker
         "PALLET STACKER": {
-          uz: "Elektr shtambilyo'r",
+          uz: "Elektr stacker mashinaslari",
           en: "Electric Stackers",
           ru: "Электрические штабелеры",
         },
@@ -100,22 +100,38 @@ const Categories = () => {
         },
         // Reach truck
         "REACH TRUCK": {
-          uz: "Ichkariga cho'zilib ishlaydigan forklift",
+          uz: "Reach truck forklift",
           en: "Reach Truck Forklifts",
           ru: "Ричтрак погрузчики",
         },
         "reach truck": {
-          uz: "Ichkariga cho'zilib ishlaydigan forklift",
+          uz: "Reach truck forklift",
           en: "Reach Truck Forklifts",
           ru: "Ричтрак погрузчики",
         },
         "Reach truck forklift": {
-          uz: "Ichkariga cho'zilib ishlaydigan forklift",
+          uz: "Reach truck forklift",
           en: "Reach Truck Forklifts",
           ru: "Ричтрак погрузчики",
         },
-        // Handle pallets
-        "Handle Pallets": {
+        // Handle pallets - Bu kategoriyani bloklash kerak, shuning uchun mapping dan olib tashladik
+        // Spare parts
+        spare: {
+          uz: "Texnika extiyot qismlarin",
+          en: "Forklifts Spare Parts",
+          ru: "Запчасти для техники",
+        },
+        "spare parts": {
+          uz: "Texnika extiyot qismlarin",
+          en: "Machinery Spare Parts",
+          ru: "Запчасти для техники",
+        },
+        "Texnika extiyot qismlarin": {
+          uz: "Texnika extiyot qismlarin",
+          en: "Machinery Spare Parts",
+          ru: "Запчасти для техники",
+        },
+             "Handle Pallets": {
           uz: "Transpallet",
           en: "Hand Pallet truck",
           ru: "Ручные паллетные тележки",
@@ -129,22 +145,6 @@ const Categories = () => {
           uz: "Tutqich, qo'l bilan boshqarish",
           en: "Manual Pallet Trucks",
           ru: "Ручные паллетные тележки",
-        },
-        // Spare parts
-        spare: {
-          uz: "Vilkali yuklagich extiyot qismlari",
-          en: "Forklifts Spare Parts",
-          ru: "Запчасти для вилочных погрузчик",
-        },
-        "spare parts": {
-          uz: "Forklift extiyot qismlari",
-          en: "Machinery Spare Parts",
-          ru: "Запчасти для вилочных погрузчик",
-        },
-        "Texnika extiyot qismlarin": {
-          uz: "Texnika extiyot qismlari",
-          en: "Machinery Spare Parts",
-          ru: "Запчасти для техники",
         },
       };
 
@@ -190,48 +190,47 @@ const Categories = () => {
         {
           id: 101,
           key: "diesel",
-          image: "/traktr.png",
+          image: "/traktr.png"
         },
         {
           id: 102,
           key: "Electric",
-          image: "/ev.png",
+          image: "/ev.png"
         },
-        {
-          id: 103,
-          key: "Petrol",
-          image: "/gaz.png",
-        },
-        {
-          id: 104,
-          key: "lpg",
-          image:
-            "https://api.jacforklift.uz/media/forklift_images/36774cf535b22fa6d59c40eeaa_MHeMrPX.png4e_500w_500h.src_95Q.webp",
-        },
-        {
-          id: 105,
-          key: "electric pallet",
-          image: "/pall.png",
-        },
-        {
-          id: 106,
-          key: "PALLET STACKER",
-          image: "/stacker.png",
-        },
-        {
-          id: 107,
-          key: "REACH TRUCK",
-          image: "/reach-truck.png",
-        },
-        {
+            {
           id: 108,
           key: "Handle Pallets",
           image: "/handle-pallet.png",
         },
         {
-          id: 109,
+          id: 103,
+          key: "Petrol",
+          image: "/gaz.png"
+        },
+        {
+          id: 104,
+          key: "lpg",
+          image: "https://api.jacforklift.uz/media/forklift_images/36774cf535b22fa6d59c40eeaa_MHeMrPX.png4e_500w_500h.src_95Q.webp"
+        },
+        {
+          id: 105,
+          key: "electric pallet",
+          image: "/pall.png"
+        },
+        {
+          id: 106,
+          key: "pallet stacker",
+          image: "/stacker.png"
+        },
+        {
+          id: 107,
+          key: "reach truck",
+          image: "/reach-truck.png"
+        },
+        {
+          id: 108,
           key: "spare",
-          image: "/spare-parts.png",
+          image: "/spare-parts.png"
         },
       ];
 
@@ -293,14 +292,9 @@ const Categories = () => {
                     const categoryKey = item.category || item.type || item.fuel_type || 'other'
                     const categoryName = item.category_name || item.type_name || item.fuel_type || categoryKey
 
-                    console.log(`Item ${index}:`, {
-                        categoryKey: categoryKey,
-                        categoryName: categoryName,
-                        lang: currentLang
-                    })
-
-                    // "Elektr seriyasi" kategoriyasini bloklash
-                    const isElektrSeriyasi =
+                    // Noxush kategoriyalarni bloklash
+                    const isBlockedCategory =
+                        // Elektr seriyasi
                         categoryName === "Elektr seriyasi" ||
                         categoryName === "Электр серияси" ||
                         categoryName === "Электрическая серия" ||
@@ -312,10 +306,40 @@ const Categories = () => {
                         categoryName?.toLowerCase().includes("электрическая серия") ||
                         categoryName?.toLowerCase().includes("electric series") ||
                         categoryName?.toLowerCase().includes("электрическая") ||
-                        categoryName?.toLowerCase().includes("электрическ")
+                        categoryName?.toLowerCase().includes("электрическ") ||
+                        // Paletalar bilan ishlov berish - barcha variantlari
+                        categoryName === "Paletalar bilan ishlov berish" ||
+                        categoryName === "Обработка паллет" ||
+                        categoryName === "Pallet Handling" ||
+                        categoryName === "pallet handling" ||
+                        categoryName === "Handle Pallets" ||
+                        categoryName === "handle pallets" ||
+                        categoryName === "Ручка для поддонов" ||
+                        categoryName === "Hand Pallet truck" ||
+                        categoryName === "Manual Pallet Trucks" ||
+                        categoryName === "Ручные паллетные тележки" ||
+                        categoryName === "Tutqich, qo'l bilan boshqarish" ||
+                        categoryName === "Transpallet" ||
+                        categoryKey === "pallet_handling" ||
+                        categoryKey === "pallet handling" ||
+                        categoryKey === "Handle Pallets" ||
+                        categoryKey === "handle pallets" ||
+                        categoryKey === "manual_pallet" ||
+                        categoryKey === "hand_pallet" ||
+                        categoryKey === "transpallet" ||
+                        categoryName?.toLowerCase().includes("paletalar bilan ishlov") ||
+                        categoryName?.toLowerCase().includes("обработка паллет") ||
+                        categoryName?.toLowerCase().includes("pallet handling") ||
+                        categoryName?.toLowerCase().includes("handle pallet") ||
+                        categoryName?.toLowerCase().includes("ручка для поддонов") ||
+                        categoryName?.toLowerCase().includes("hand pallet") ||
+                        categoryName?.toLowerCase().includes("manual pallet") ||
+                        categoryName?.toLowerCase().includes("ручные паллетные") ||
+                        categoryName?.toLowerCase().includes("transpallet") ||
+                        categoryName?.toLowerCase().includes("tutqich")
 
-                    if (isElektrSeriyasi) {
-                        console.log('🚫 ELEKTR SERIYASI BLOKLANDI:', categoryName)
+                    if (isBlockedCategory) {
+                        console.log('🚫 BLOKLANGAN KATEGORIYA:', categoryName)
                         return
                     }
 
@@ -329,12 +353,10 @@ const Categories = () => {
                             originalName: categoryName,
                             image: getImagePath(item.image || item.photo),
                             key: categoryKey,
-                            description: item.description || null,
-                            count: 1
+                            description: item.description || null
                         })
                     } else {
                         const existing = categoryMap.get(categoryKey)
-                        existing.count += 1
                         // Rasm yangilash
                         if (!existing.image && (item.image || item.photo)) {
                             existing.image = getImagePath(item.image || item.photo)
@@ -343,7 +365,6 @@ const Categories = () => {
                 })
 
                 formattedCategories = Array.from(categoryMap.values())
-                console.log('Generated categories from API:', formattedCategories)
             }
 
             // Agar API dan kam kategoriya kelsa, static kategoriyalarni qo'shish
@@ -352,14 +373,13 @@ const Categories = () => {
                 const staticCategories = getStaticCategories()
                 const existingKeys = formattedCategories.map(cat => cat.key)
 
-                staticCategories.forEach(staticCat => {
+                for (const staticCat of staticCategories) {
                     if (!existingKeys.includes(staticCat.key)) {
-                        formattedCategories.push(staticCat)
+                        formattedCategories.push(staticCat);
                     }
-                })
+                }
             }
 
-            console.log('Final categories:', formattedCategories)
             setCategories(formattedCategories)
             setError(null)
         } catch (error) {
@@ -442,9 +462,6 @@ const Categories = () => {
                             </p>
                         </div>
                     )}
-
-                    {/* Debug ma'lumotlari */}
-                  
                 </div>
 
                 {/* Categories Grid */}
