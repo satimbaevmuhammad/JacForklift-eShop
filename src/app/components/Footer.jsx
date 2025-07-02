@@ -18,7 +18,7 @@ const Footer = () => {
                     {/* Center: Copyright */}
                     <div className='text-center'>
                         <p className='text-gray-300 text-sm'>
-                            {'JAC Forklift © 2025 Barcha huquqlar himoyalangan'}
+                            {t('footer.copyright') || 'JAC Forklift © 2025 Barcha huquqlar himoyalangan'}
                         </p>
                     </div>
 
@@ -154,7 +154,7 @@ const Footer = () => {
                     {/* Copyright */}
                     <div className='text-center'>
                         <p className='text-gray-300 text-sm'>
-                            {'JAC Forklift © 2025. Barcha huquqlar himoyalangan'}
+                            {t('footer.copyright') || 'JAC Forklift © 2025. Barcha huquqlar himoyalangan'}
                         </p>
                     </div>
                 </div>

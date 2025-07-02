@@ -128,6 +128,13 @@ const CategoryDetailPage = () => {
           en: "No products in this category",
         },
         more_info: { uz: "Batafsil", ru: "Подробнее", en: "More Info" },
+        // Qo'shimcha labellar
+        model: { uz: "Model", ru: "Модель", en: "Model" },
+        capacity: { uz: "Sig'im", ru: "Грузоподъемность", en: "Capacity" },
+        engine: { uz: "Dvigatel", ru: "Двигатель", en: "Engine" },
+        year: { uz: "Yil", ru: "Год", en: "Year" },
+        price_inquiry: { uz: "Narx so'rash", ru: "Цена по запросу", en: "Price on request" },
+        available: { uz: "Mavjud", ru: "В наличии", en: "Available" },
       };
       return texts[key]?.[lang] || texts[key]?.uz || key;
     },
@@ -517,7 +524,7 @@ const CategoryDetailPage = () => {
                         ${parseFloat(product.price).toLocaleString()}
                       </p>
                     ) : (
-                      <p className="text-gray-500 text-lg">Narx so'rash</p>
+                      <p className="text-gray-500 text-lg">{getText("price_inquiry")}</p>
                     )}
                   </div>
 
@@ -525,7 +532,7 @@ const CategoryDetailPage = () => {
                   <div className="space-y-2 mb-4">
                     {product.model_number && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Model:</span>
+                        <span className="text-gray-500">{getText("model")}:</span>
                         <span className="text-gray-700 font-medium">
                           {product.model_number}
                         </span>
@@ -534,7 +541,7 @@ const CategoryDetailPage = () => {
 
                     {product.capacity_kg && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Sig'im:</span>
+                        <span className="text-gray-500">{getText("capacity")}:</span>
                         <span className="text-gray-700 font-medium">
                           {product.capacity_kg} kg
                         </span>
@@ -543,7 +550,7 @@ const CategoryDetailPage = () => {
 
                     {product.engine_type && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Dvigatel:</span>
+                        <span className="text-gray-500">{getText("engine")}:</span>
                         <span className="text-gray-700 font-medium">
                           {product.engine_type}
                         </span>
@@ -552,7 +559,7 @@ const CategoryDetailPage = () => {
 
                     {product.manufacture_year && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Yil:</span>
+                        <span className="text-gray-500">{getText("year")}:</span>
                         <span className="text-gray-700 font-medium">
                           {product.manufacture_year}
                         </span>
@@ -563,7 +570,7 @@ const CategoryDetailPage = () => {
                   {/* Stock Status */}
                   <div className="mb-4">
                     <span className="inline-block px-3 py-1 text-xs rounded-full font-medium bg-green-100 text-green-700">
-                      Mavjud
+                      {getText("available")}
                     </span>
                   </div>
 
